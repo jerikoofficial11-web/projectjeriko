@@ -1074,21 +1074,105 @@
         </div>
     </div>
 
+    <!-- KONEKSI SDK FIREBASE FIRESTORE -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // GANTI DENGAN KODE KONFIGURASI FIREBASE MILIKMU SENDIRI DARI FIREBASE CONSOLE
+        const firebaseConfig = {
+            apiKey: "AIzaSyAcL8puOvh2pQhBGX0liKuCFT4d-IfO_0A",
+            authDomain: "project-jeriko.firebaseapp.com",
+            projectId: "project-jeriko",
+            storageBucket: "project-jeriko.firebasestorage.app",
+            messagingSenderId: "53976639802",
+            appId: "1:539766398028:web:687d554fb7747d533068e9"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Fungsi Global untuk Sinkronisasi ke Firestore Database Online
+        window.saveDataToFirebase = async function() {
+            try {
+                const fullData = {
+                    dbService: window.dbService || [],
+                    dbSparepart: window.dbSparepart || [],
+                    dbSparepartUsage: window.dbSparepartUsage || [],
+                    dbStaff: window.dbStaff || [],
+                    dbAsset: window.dbAsset || [],
+                    dbKas: window.dbKas || [],
+                    storeSettings: window.storeSettings || {}
+                };
+
+                // Simpan ke Firestore
+                await setDoc(doc(db, "toko_jeriko", "database_utama"), fullData);
+                console.log("Data berhasil disinkronkan ke Firebase!");
+            } catch (err) {
+                console.error("Gagal menyimpan ke Firebase:", err);
+            }
+        };
+
+        window.loadDataFromFirebase = async function() {
+            try {
+                const docRef = doc(db, "toko_jeriko", "database_utama");
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    window.dbService = data.dbService || [];
+                    window.dbSparepart = data.dbSparepart || [];
+                    window.dbSparepartUsage = data.dbSparepartUsage || [];
+                    window.dbStaff = data.dbStaff || [];
+                    window.dbAsset = data.dbAsset || [];
+                    window.dbKas = data.dbKas || [];
+                    if (data.storeSettings) window.storeSettings = data.storeSettings;
+                    
+                    console.log("Data berhasil dimuat dari Firebase Cloud!");
+                } else {
+                    console.log("Belum ada data di cloud. Menggunakan data default.");
+                }
+            } catch (err) {
+                console.error("Gagal memuat data dari Firebase:", err);
+            } finally {
+                // Refresh seluruh tampilan tabel setelah data cloud ditarik
+                if(window.loadSettingsForm) window.loadSettingsForm();
+                if(window.generateNextNotaNumber) window.generateNextNotaNumber();
+                if(window.renderStaffDropdowns) window.renderStaffDropdowns();
+                if(window.renderSparepartOptionsInRepair) window.renderSparepartOptionsInRepair();
+                if(window.renderClientDropdownForInvoice) window.renderClientDropdownForInvoice();
+                if(window.renderDashboard) window.renderDashboard();
+                if(window.renderServiceTable) window.renderServiceTable();
+                if(window.renderCustomerTable) window.renderCustomerTable();
+                if(window.renderSparepartTable) window.renderSparepartTable();
+                if(window.renderSparepartUsageTable) window.renderSparepartUsageTable();
+                if(window.renderStaffTable) window.renderStaffTable();
+                if(window.renderAssetTable) window.renderAssetTable();
+                if(window.renderKasTable) window.renderKasTable();
+                if(window.renderLabaRugiReport) window.renderLabaRugiReport();
+            }
+        };
+
+        // Otomatis tarik data saat website pertama kali dibuka
+        window.loadDataFromFirebase();
+    </script>
+
+    <!-- SCRIPT UTAMA SISTEM KASIR -->
     <script>
-        let dbService = JSON.parse(localStorage.getItem('jeriko_service_db')) || [];
-        let dbSparepart = JSON.parse(localStorage.getItem('jeriko_sparepart_db')) || [
+        window.dbService = JSON.parse(localStorage.getItem('jeriko_service_db')) || [];
+        window.dbSparepart = JSON.parse(localStorage.getItem('jeriko_sparepart_db')) || [
             { id: '1', kode: 'LCD-IP11', nama: 'LCD iPhone 11', stok: 5, minStok: 2, hpp: 320000, harga: 550000 }
         ];
-        let dbSparepartUsage = JSON.parse(localStorage.getItem('jeriko_sparepart_usage_db')) || [];
-        let dbStaff = JSON.parse(localStorage.getItem('jeriko_staff_db')) || [
+        window.dbSparepartUsage = JSON.parse(localStorage.getItem('jeriko_sparepart_usage_db')) || [];
+        window.dbStaff = JSON.parse(localStorage.getItem('jeriko_staff_db')) || [
             { id: '1', nama: 'Jeriko (Teknisi Utama)', role: 'Kepala Toko', wa: '08123456789', komisi: 50 },
             { id: '2', nama: 'Budi (Teknisi)', role: 'Teknisi', wa: '08129876543', komisi: 35 }
         ];
-        let dbAsset = JSON.parse(localStorage.getItem('jeriko_asset_db')) || [
+        window.dbAsset = JSON.parse(localStorage.getItem('jeriko_asset_db')) || [
             { id: '1', nama: 'Solder Uap Quick 857DW+', kategori: 'Mesin / Alat', jml: 2, nilai: 1500000 }
         ];
-        let dbKas = JSON.parse(localStorage.getItem('jeriko_kas_db')) || [];
-        let storeSettings = JSON.parse(localStorage.getItem('jeriko_settings')) || {
+        window.dbKas = JSON.parse(localStorage.getItem('jeriko_kas_db')) || [];
+        window.storeSettings = JSON.parse(localStorage.getItem('jeriko_settings')) || {
             namaToko: 'PROJECT JERIKO',
             pemilik: 'Jeriko',
             wa: '0812-3456-7890',
@@ -1163,13 +1247,18 @@
         }
 
         function saveData() {
-            localStorage.setItem('jeriko_service_db', JSON.stringify(dbService));
-            localStorage.setItem('jeriko_sparepart_db', JSON.stringify(dbSparepart));
-            localStorage.setItem('jeriko_sparepart_usage_db', JSON.stringify(dbSparepartUsage));
-            localStorage.setItem('jeriko_staff_db', JSON.stringify(dbStaff));
-            localStorage.setItem('jeriko_asset_db', JSON.stringify(dbAsset));
-            localStorage.setItem('jeriko_kas_db', JSON.stringify(dbKas));
-            localStorage.setItem('jeriko_settings', JSON.stringify(storeSettings));
+            localStorage.setItem('jeriko_service_db', JSON.stringify(window.dbService));
+            localStorage.setItem('jeriko_sparepart_db', JSON.stringify(window.dbSparepart));
+            localStorage.setItem('jeriko_sparepart_usage_db', JSON.stringify(window.dbSparepartUsage));
+            localStorage.setItem('jeriko_staff_db', JSON.stringify(window.dbStaff));
+            localStorage.setItem('jeriko_asset_db', JSON.stringify(window.dbAsset));
+            localStorage.setItem('jeriko_kas_db', JSON.stringify(window.dbKas));
+            localStorage.setItem('jeriko_settings', JSON.stringify(window.storeSettings));
+
+            // Simpan juga ke Firebase Cloud
+            if (window.saveDataToFirebase) {
+                window.saveDataToFirebase();
+            }
         }
 
         function initClock() {
@@ -1227,7 +1316,7 @@
 
         function generateNextNotaNumber() {
             const todayStr = new Date().toISOString().slice(0,10).replace(/-/g,'');
-            const todayServices = dbService.filter(s => s.nota.includes(todayStr));
+            const todayServices = window.dbService.filter(s => s.nota.includes(todayStr));
             const seq = String(todayServices.length + 1).padStart(3, '0');
             const newNota = `JRKO-${todayStr}-${seq}`;
             document.getElementById('repair-auto-nota').innerText = newNota;
@@ -1236,7 +1325,7 @@
 
         function renderStaffDropdowns() {
             const selects = [document.getElementById('rep-teknisi'), document.getElementById('edit-teknisi')];
-            const teknisis = dbStaff.filter(s => s.role === 'Teknisi' || s.role === 'Kepala Toko');
+            const teknisis = window.dbStaff.filter(s => s.role === 'Teknisi' || s.role === 'Kepala Toko');
             selects.forEach(sel => {
                 if(!sel) return;
                 sel.innerHTML = '';
@@ -1249,7 +1338,7 @@
         function renderSparepartOptionsInRepair() {
             const select = document.getElementById('rep-sparepart-select');
             select.innerHTML = '<option value="">-- Jasa Saja / Manual --</option>';
-            dbSparepart.forEach(sp => {
+            window.dbSparepart.forEach(sp => {
                 select.innerHTML += `<option value="${sp.id}">${sp.nama} (Stok: ${sp.stok}) - Rp ${sp.harga.toLocaleString('id-ID')}</option>`;
             });
         }
@@ -1257,7 +1346,7 @@
         function handleSelectSparepartRepair() {
             const spId = document.getElementById('rep-sparepart-select').value;
             if(spId) {
-                const part = dbSparepart.find(p => p.id === spId);
+                const part = window.dbSparepart.find(p => p.id === spId);
                 if(part) document.getElementById('rep-biaya').value = part.harga;
             }
         }
@@ -1268,7 +1357,7 @@
             select.innerHTML = '<option value="">-- Pilih Pelanggan / Partner --</option>';
             
             const uniqueClients = {};
-            dbService.forEach(s => {
+            window.dbService.forEach(s => {
                 const key = s.wa.trim();
                 if(!uniqueClients[key]) {
                     uniqueClients[key] = { nama: s.nama, wa: s.wa, alamat: s.alamat || '-' };
@@ -1290,7 +1379,7 @@
                 return;
             }
 
-            const clientServices = dbService.filter(s => {
+            const clientServices = window.dbService.filter(s => {
                 const matchWa = s.wa.trim() === waClient;
                 const parts = s.tanggal.split('/');
                 if(parts.length === 3) {
@@ -1299,11 +1388,11 @@
                 return false;
             });
 
-            const clientInfo = dbService.find(s => s.wa.trim() === waClient) || { nama: '-', wa: waClient, alamat: '-' };
+            const clientInfo = window.dbService.find(s => s.wa.trim() === waClient) || { nama: '-', wa: waClient, alamat: '-' };
 
-            document.getElementById('inv-store-title').innerText = storeSettings.namaToko;
-            document.getElementById('inv-store-address').innerText = storeSettings.alamat;
-            document.getElementById('inv-store-wa').innerText = storeSettings.wa;
+            document.getElementById('inv-store-title').innerText = window.storeSettings.namaToko;
+            document.getElementById('inv-store-address').innerText = window.storeSettings.alamat;
+            document.getElementById('inv-store-wa').innerText = window.storeSettings.wa;
             document.getElementById('inv-number-display').innerText = `INV/${tahun}/${bulan}/${waClient.slice(-4)}`;
             
             const namaBulanSelect = document.getElementById('inv-bulan');
@@ -1313,7 +1402,7 @@
             document.getElementById('inv-client-name').innerText = clientInfo.nama;
             document.getElementById('inv-client-wa').innerText = 'WA: ' + clientInfo.wa;
             document.getElementById('inv-client-address').innerText = 'Alamat: ' + (clientInfo.alamat || '-');
-            document.getElementById('inv-sign-store').innerText = storeSettings.namaToko;
+            document.getElementById('inv-sign-store').innerText = window.storeSettings.namaToko;
             document.getElementById('inv-sign-client').innerText = clientInfo.nama;
 
             const tbody = document.getElementById('inv-items-tbody');
@@ -1357,18 +1446,18 @@
             let usedPart = null;
 
             if(spId) {
-                const partIndex = dbSparepart.findIndex(p => p.id === spId);
-                if(partIndex !== -1 && dbSparepart[partIndex].stok > 0) {
-                    dbSparepart[partIndex].stok -= 1;
-                    usedPart = { id: dbSparepart[partIndex].id, nama: dbSparepart[partIndex].nama, hpp: dbSparepart[partIndex].hpp };
-                    dbSparepartUsage.unshift({
+                const partIndex = window.dbSparepart.findIndex(p => p.id === spId);
+                if(partIndex !== -1 && window.dbSparepart[partIndex].stok > 0) {
+                    window.dbSparepart[partIndex].stok -= 1;
+                    usedPart = { id: window.dbSparepart[partIndex].id, nama: window.dbSparepart[partIndex].nama, hpp: window.dbSparepart[partIndex].hpp };
+                    window.dbSparepartUsage.unshift({
                         id: Date.now().toString(),
                         tanggal: new Date().toLocaleDateString('id-ID'),
                         nota: notaNumber,
-                        namaPart: dbSparepart[partIndex].nama,
+                        namaPart: window.dbSparepart[partIndex].nama,
                         pelanggan: document.getElementById('rep-nama').value,
                         jenis: jenisPemakaian,
-                        hpp: dbSparepart[partIndex].hpp
+                        hpp: window.dbSparepart[partIndex].hpp
                     });
                 } else {
                     alert('Stok sparepart habis!');
@@ -1400,9 +1489,9 @@
                 status: 'Diterima'
             };
 
-            dbService.unshift(serviceData);
+            window.dbService.unshift(serviceData);
             if(dp > 0) {
-                dbKas.unshift({ id: Date.now().toString(), tanggal: new Date().toLocaleDateString('id-ID'), ket: `DP Service ${notaNumber} (${serviceData.nama})`, jenis: 'Masuk', nominal: dp });
+                window.dbKas.unshift({ id: Date.now().toString(), tanggal: new Date().toLocaleDateString('id-ID'), ket: `DP Service ${notaNumber} (${serviceData.nama})`, jenis: 'Masuk', nominal: dp });
             }
 
             saveData();
@@ -1422,13 +1511,13 @@
                 app: "PROJECT JERIKO",
                 version: "6.5",
                 timestamp: new Date().toISOString(),
-                service: dbService,
-                sparepart: dbSparepart,
-                sparepartUsage: dbSparepartUsage,
-                staff: dbStaff,
-                asset: dbAsset,
-                kas: dbKas,
-                settings: storeSettings
+                service: window.dbService,
+                sparepart: window.dbSparepart,
+                sparepartUsage: window.dbSparepartUsage,
+                staff: window.dbStaff,
+                asset: window.dbAsset,
+                kas: window.dbKas,
+                settings: window.storeSettings
             };
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
             const downloadAnchor = document.createElement('a');
@@ -1452,13 +1541,13 @@
                     const parsed = JSON.parse(e.target.result);
                     if(parsed.service && parsed.sparepart) {
                         if(confirm('Restore database akan menggantikan data saat ini. Lanjutkan?')) {
-                            dbService = parsed.service || [];
-                            dbSparepart = parsed.sparepart || [];
-                            dbSparepartUsage = parsed.sparepartUsage || [];
-                            dbStaff = parsed.staff || [];
-                            dbAsset = parsed.asset || [];
-                            dbKas = parsed.kas || [];
-                            if(parsed.settings) storeSettings = parsed.settings;
+                            window.dbService = parsed.service || [];
+                            window.dbSparepart = parsed.sparepart || [];
+                            window.dbSparepartUsage = parsed.sparepartUsage || [];
+                            window.dbStaff = parsed.staff || [];
+                            window.dbAsset = parsed.asset || [];
+                            window.dbKas = parsed.kas || [];
+                            if(parsed.settings) window.storeSettings = parsed.settings;
                             saveData();
                             location.reload();
                         }
@@ -1478,7 +1567,7 @@
             tbody.innerHTML = '';
 
             const customerMap = {};
-            dbService.forEach(s => {
+            window.dbService.forEach(s => {
                 const key = s.wa.trim();
                 if(!customerMap[key]) {
                     customerMap[key] = { nama: s.nama, wa: s.wa, alamat: s.alamat || '-', count: 0, lastUnit: s.tipe };
@@ -1496,7 +1585,7 @@
 
             filtered.forEach(c => {
                 const cleanWa = cleanWhatsAppNumber(c.wa);
-                const waText = encodeURIComponent(`Halo Kak *${c.nama}*, terima kasih telah menjadi pelanggan setia di *${storeSettings.namaToko}*. Ada yang bisa kami bantu hari ini?`);
+                const waText = encodeURIComponent(`Halo Kak *${c.nama}*, terima kasih telah menjadi pelanggan setia di *${window.storeSettings.namaToko}*. Ada yang bisa kami bantu hari ini?`);
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-50">
                         <td class="py-3 px-3 font-bold text-slate-800">${c.nama}</td>
@@ -1518,7 +1607,7 @@
             const bulan = document.getElementById('reset-bulan-select').value;
             const tahun = document.getElementById('reset-tahun-input').value;
             if(confirm(`Yakin ingin menghapus seluruh catatan kas untuk periode ${bulan}/${tahun}?`)) {
-                dbKas = dbKas.filter(k => {
+                window.dbKas = window.dbKas.filter(k => {
                     const parts = k.tanggal.split('/');
                     if(parts.length === 3) return !(parts[1] === bulan && parts[2] === tahun);
                     return true;
@@ -1531,12 +1620,12 @@
         }
 
         function renderDashboard() {
-            const masukToday = dbService.filter(s => s.tanggal === new Date().toLocaleDateString('id-ID')).length;
-            const dalamProses = dbService.filter(s => s.status === 'Proses').length;
-            const selesai = dbService.filter(s => s.status === 'Selesai').length;
-            const totalMasuk = dbKas.filter(k => k.jenis === 'Masuk').reduce((acc, curr) => acc + curr.nominal, 0);
-            const totalKeluar = dbKas.filter(k => k.jenis === 'Keluar').reduce((acc, curr) => acc + curr.nominal, 0);
-            const totalAset = dbAsset.reduce((acc, curr) => acc + (curr.nilai * curr.jml), 0);
+            const masukToday = window.dbService.filter(s => s.tanggal === new Date().toLocaleDateString('id-ID')).length;
+            const dalamProses = window.dbService.filter(s => s.status === 'Proses').length;
+            const selesai = window.dbService.filter(s => s.status === 'Selesai').length;
+            const totalMasuk = window.dbKas.filter(k => k.jenis === 'Masuk').reduce((acc, curr) => acc + curr.nominal, 0);
+            const totalKeluar = window.dbKas.filter(k => k.jenis === 'Keluar').reduce((acc, curr) => acc + curr.nominal, 0);
+            const totalAset = window.dbAsset.reduce((acc, curr) => acc + (curr.nilai * curr.jml), 0);
 
             document.getElementById('dash-masuk-today').innerText = masukToday;
             document.getElementById('dash-dalam-proses').innerText = dalamProses;
@@ -1547,7 +1636,7 @@
 
             const tbody = document.getElementById('dash-recent-table');
             tbody.innerHTML = '';
-            dbService.slice(0, 5).forEach(s => {
+            window.dbService.slice(0, 5).forEach(s => {
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-50">
                         <td class="py-2.5 px-3 font-mono font-bold text-sky-700">${s.nota}</td>
@@ -1581,14 +1670,14 @@
             const search = document.getElementById('search-data-input').value.toLowerCase();
             tbody.innerHTML = '';
 
-            let filtered = dbService;
+            let filtered = window.dbService;
             if(activeFilterStatus !== 'ALL') filtered = filtered.filter(s => s.status === activeFilterStatus);
             if(search) filtered = filtered.filter(s => s.nota.toLowerCase().includes(search) || s.nama.toLowerCase().includes(search) || s.tipe.toLowerCase().includes(search));
 
             filtered.forEach(s => {
                 const sisa = s.biaya - s.dp;
                 const cleanWa = cleanWhatsAppNumber(s.wa);
-                const waText = encodeURIComponent(`Halo Kak *${s.nama}*, update status unit *${s.tipe}* (Nota: ${s.nota}) di *${storeSettings.namaToko}* saat ini adalah: *${s.status}*. Total Biaya: Rp ${s.biaya.toLocaleString('id-ID')} (Sisa: Rp ${sisa.toLocaleString('id-ID')}). Terima kasih.`);
+                const waText = encodeURIComponent(`Halo Kak *${s.nama}*, update status unit *${s.tipe}* (Nota: ${s.nota}) di *${window.storeSettings.namaToko}* saat ini adalah: *${s.status}*. Total Biaya: Rp ${s.biaya.toLocaleString('id-ID')} (Sisa: Rp ${sisa.toLocaleString('id-ID')}). Terima kasih.`);
                 
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-50">
@@ -1615,7 +1704,7 @@
         }
 
         function openEditModal(nota) {
-            const s = dbService.find(item => item.nota === nota);
+            const s = window.dbService.find(item => item.nota === nota);
             if(s) {
                 document.getElementById('edit-nota').value = s.nota;
                 document.getElementById('edit-modal-nota-title').innerText = s.nota;
@@ -1635,16 +1724,16 @@
         function handleUpdateService(e) {
             e.preventDefault();
             const nota = document.getElementById('edit-nota').value;
-            const idx = dbService.findIndex(s => s.nota === nota);
+            const idx = window.dbService.findIndex(s => s.nota === nota);
             if(idx !== -1) {
-                dbService[idx].nama = document.getElementById('edit-nama').value;
-                dbService[idx].wa = document.getElementById('edit-wa').value;
-                dbService[idx].tipe = document.getElementById('edit-tipe').value;
-                dbService[idx].kerusakan = document.getElementById('edit-kerusakan').value;
-                dbService[idx].biaya = parseInt(document.getElementById('edit-biaya').value) || 0;
-                dbService[idx].dp = parseInt(document.getElementById('edit-dp').value) || 0;
-                dbService[idx].sisa = dbService[idx].biaya - dbService[idx].dp;
-                dbService[idx].teknisi = document.getElementById('edit-teknisi').value;
+                window.dbService[idx].nama = document.getElementById('edit-nama').value;
+                window.dbService[idx].wa = document.getElementById('edit-wa').value;
+                window.dbService[idx].tipe = document.getElementById('edit-tipe').value;
+                window.dbService[idx].kerusakan = document.getElementById('edit-kerusakan').value;
+                window.dbService[idx].biaya = parseInt(document.getElementById('edit-biaya').value) || 0;
+                window.dbService[idx].dp = parseInt(document.getElementById('edit-dp').value) || 0;
+                window.dbService[idx].sisa = window.dbService[idx].biaya - window.dbService[idx].dp;
+                window.dbService[idx].teknisi = document.getElementById('edit-teknisi').value;
                 saveData();
                 closeEditModal();
                 renderServiceTable();
@@ -1654,11 +1743,11 @@
         }
 
         function handleUpdateStatus(nota, newStatus) {
-            const idx = dbService.findIndex(s => s.nota === nota);
+            const idx = window.dbService.findIndex(s => s.nota === nota);
             if(idx === -1) return;
             if(newStatus === 'Diambil') {
                 currentSettlingNota = nota;
-                const s = dbService[idx];
+                const s = window.dbService[idx];
                 document.getElementById('pay-modal-nota').innerText = s.nota;
                 document.getElementById('pay-modal-nama').innerText = s.nama;
                 document.getElementById('pay-modal-biaya').innerText = 'Rp ' + s.biaya.toLocaleString('id-ID');
@@ -1666,7 +1755,7 @@
                 document.getElementById('pay-modal-sisa').innerText = 'Rp ' + (s.biaya - s.dp).toLocaleString('id-ID');
                 document.getElementById('modal-payment').classList.remove('hidden');
             } else {
-                dbService[idx].status = newStatus;
+                window.dbService[idx].status = newStatus;
                 saveData();
                 renderServiceTable();
                 renderLabaRugiReport();
@@ -1677,13 +1766,13 @@
 
         function confirmPaymentAndFinish() {
             if(!currentSettlingNota) return;
-            const idx = dbService.findIndex(s => s.nota === currentSettlingNota);
+            const idx = window.dbService.findIndex(s => s.nota === currentSettlingNota);
             if(idx !== -1) {
-                const s = dbService[idx];
+                const s = window.dbService[idx];
                 const sisa = s.biaya - s.dp;
                 s.status = 'Diambil';
                 if(sisa > 0) {
-                    dbKas.unshift({ id: Date.now().toString(), tanggal: new Date().toLocaleDateString('id-ID'), ket: `Pelunasan ${s.nota} (${s.nama})`, jenis: 'Masuk', nominal: sisa });
+                    window.dbKas.unshift({ id: Date.now().toString(), tanggal: new Date().toLocaleDateString('id-ID'), ket: `Pelunasan ${s.nota} (${s.nama})`, jenis: 'Masuk', nominal: sisa });
                 }
                 saveData();
                 closePaymentModal();
@@ -1695,7 +1784,7 @@
         function renderSparepartUsageTable() {
             const tbody = document.getElementById('sparepart-usage-table-body');
             tbody.innerHTML = '';
-            dbSparepartUsage.forEach(u => {
+            window.dbSparepartUsage.forEach(u => {
                 const badgeColor = u.jenis === 'Dalam Toko' ? 'bg-sky-100 text-sky-800' : 'bg-purple-100 text-purple-800';
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-50">
@@ -1711,8 +1800,8 @@
         function renderStaffTable() {
             const tbody = document.getElementById('staff-table-body');
             tbody.innerHTML = '';
-            dbStaff.forEach(stf => {
-                const completedUnits = dbService.filter(s => s.teknisi === stf.nama && s.status === 'Diambil');
+            window.dbStaff.forEach(stf => {
+                const completedUnits = window.dbService.filter(s => s.teknisi === stf.nama && s.status === 'Diambil');
                 const totalJasa = completedUnits.reduce((acc, curr) => acc + curr.biaya, 0);
                 const estimatedSalary = (totalJasa * stf.komisi) / 100;
                 tbody.innerHTML += `
@@ -1729,7 +1818,7 @@
 
         function handleSaveStaff(e) {
             e.preventDefault();
-            dbStaff.push({
+            window.dbStaff.push({
                 id: Date.now().toString(),
                 nama: document.getElementById('staff-nama').value,
                 role: document.getElementById('staff-role').value,
@@ -1743,12 +1832,12 @@
             e.target.reset();
         }
 
-        function deleteStaff(id) { dbStaff = dbStaff.filter(s => s.id !== id); saveData(); renderStaffTable(); renderStaffDropdowns(); renderLabaRugiReport(); }
+        function deleteStaff(id) { window.dbStaff = window.dbStaff.filter(s => s.id !== id); saveData(); renderStaffTable(); renderStaffDropdowns(); renderLabaRugiReport(); }
 
         function renderAssetTable() {
             const tbody = document.getElementById('asset-table-body');
             tbody.innerHTML = '';
-            dbAsset.forEach(ast => {
+            window.dbAsset.forEach(ast => {
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-50">
                         <td class="py-2.5 px-3 font-semibold">${ast.nama}</td>
@@ -1763,7 +1852,7 @@
 
         function handleSaveAsset(e) {
             e.preventDefault();
-            dbAsset.push({
+            window.dbAsset.push({
                 id: Date.now().toString(),
                 nama: document.getElementById('asset-nama').value,
                 kategori: document.getElementById('asset-kategori').value,
@@ -1775,12 +1864,12 @@
             e.target.reset();
         }
 
-        function deleteAsset(id) { dbAsset = dbAsset.filter(a => a.id !== id); saveData(); renderAssetTable(); }
+        function deleteAsset(id) { window.dbAsset = window.dbAsset.filter(a => a.id !== id); saveData(); renderAssetTable(); }
 
         function renderSparepartTable() {
             const tbody = document.getElementById('sparepart-table-body');
             tbody.innerHTML = '';
-            dbSparepart.forEach(p => {
+            window.dbSparepart.forEach(p => {
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-50">
                         <td class="py-2.5 px-3 font-mono">${p.kode}</td>
@@ -1796,7 +1885,7 @@
 
         function handleSaveSparepart(e) {
             e.preventDefault();
-            dbSparepart.push({
+            window.dbSparepart.push({
                 id: Date.now().toString(),
                 kode: document.getElementById('sp-kode').value,
                 nama: document.getElementById('sp-nama').value,
@@ -1810,13 +1899,13 @@
             e.target.reset();
         }
 
-        function deleteSparepart(id) { dbSparepart = dbSparepart.filter(p => p.id !== id); saveData(); renderSparepartTable(); renderSparepartOptionsInRepair(); }
+        function deleteSparepart(id) { window.dbSparepart = window.dbSparepart.filter(p => p.id !== id); saveData(); renderSparepartTable(); renderSparepartOptionsInRepair(); }
 
         function renderKasTable() {
             const tbody = document.getElementById('kas-table-body');
             tbody.innerHTML = '';
             let totalMasuk = 0, totalKeluar = 0;
-            dbKas.forEach(k => {
+            window.dbKas.forEach(k => {
                 if(k.jenis === 'Masuk') totalMasuk += k.nominal; else totalKeluar += k.nominal;
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-50">
@@ -1835,7 +1924,7 @@
 
         function handleSaveKas(e) {
             e.preventDefault();
-            dbKas.unshift({
+            window.dbKas.unshift({
                 id: Date.now().toString(),
                 tanggal: new Date().toLocaleDateString('id-ID'),
                 jenis: document.getElementById('kas-jenis').value,
@@ -1852,14 +1941,13 @@
             const bulan = document.getElementById('lr-bulan').value;
             const tahun = document.getElementById('lr-tahun').value;
             
-            document.getElementById('lr-print-store-name').innerText = storeSettings.namaToko;
+            document.getElementById('lr-print-store-name').innerText = window.storeSettings.namaToko;
             const namaBulanSelect = document.getElementById('lr-bulan');
             const namaBulanText = bulan === 'ALL' ? 'Semua Bulan' : namaBulanSelect.options[namaBulanSelect.selectedIndex].text;
             document.getElementById('lr-periode-label').innerText = `Laporan Laba Rugi Periode: ${namaBulanText} ${tahun}`;
 
-            // HANYA MASUKKAN DATA SERVICE YANG BERSTATUS 'Diambil' DAN ABAIKAN 'Dibatalkan' SERTA STATUS LAINNYA
-            let filteredService = dbService.filter(s => {
-                if (s.status !== 'Diambil') return false; // Hanya hitung unit yang sudah lunas/diambil
+            let filteredService = window.dbService.filter(s => {
+                if (s.status !== 'Diambil') return false;
 
                 const parts = s.tanggal.split('/');
                 if(parts.length === 3) {
@@ -1870,9 +1958,8 @@
                 return false;
             });
 
-            // Sinkronkan pemakaian sparepart HANYA dari nota service yang berstatus 'Diambil'
             let activeNotas = filteredService.map(s => s.nota);
-            let filteredUsage = dbSparepartUsage.filter(u => {
+            let filteredUsage = window.dbSparepartUsage.filter(u => {
                 if (!activeNotas.includes(u.nota)) return false;
 
                 const parts = u.tanggal.split('/');
@@ -1884,7 +1971,7 @@
                 return false;
             });
 
-            let filteredKasKeluar = dbKas.filter(k => {
+            let filteredKasKeluar = window.dbKas.filter(k => {
                 if(k.jenis !== 'Keluar') return false;
                 const parts = k.tanggal.split('/');
                 if(parts.length === 3) {
@@ -1901,7 +1988,7 @@
             const totalKasKeluar = filteredKasKeluar.reduce((acc, curr) => acc + curr.nominal, 0);
 
             let totalGajiKomisi = 0;
-            dbStaff.forEach(stf => {
+            window.dbStaff.forEach(stf => {
                 const stfUnits = filteredService.filter(s => s.teknisi === stf.nama && s.status === 'Diambil');
                 const stfOmset = stfUnits.reduce((acc, curr) => acc + curr.biaya, 0);
                 totalGajiKomisi += (stfOmset * stf.komisi) / 100;
@@ -1948,7 +2035,7 @@
             const query = document.getElementById('garansi-search-input').value.trim().toLowerCase();
             const res = document.getElementById('garansi-result');
             res.classList.remove('hidden');
-            const found = dbService.find(s => s.nota.toLowerCase() === query || (s.imei && s.imei.toLowerCase() === query));
+            const found = window.dbService.find(s => s.nota.toLowerCase() === query || (s.imei && s.imei.toLowerCase() === query));
             if(found) {
                 res.className = "p-4 rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-900 text-xs space-y-2";
                 res.innerHTML = `<b>Nota: ${found.nota}</b><br>Pelanggan: ${found.nama}<br>Unit: ${found.tipe}<br>Status: ${found.status}`;
@@ -1959,19 +2046,19 @@
         }
 
         function loadSettingsForm() {
-            document.getElementById('set-nama-toko').value = storeSettings.namaToko;
-            document.getElementById('set-pemilik').value = storeSettings.pemilik || '';
-            document.getElementById('set-wa').value = storeSettings.wa;
-            document.getElementById('set-email').value = storeSettings.email || '';
-            document.getElementById('set-alamat').value = storeSettings.alamat;
-            document.getElementById('set-syarat').value = storeSettings.syarat;
-            document.getElementById('sidebar-store-name').innerText = storeSettings.namaToko;
-            if(document.getElementById('mobile-store-name')) document.getElementById('mobile-store-name').innerText = storeSettings.namaToko;
+            document.getElementById('set-nama-toko').value = window.storeSettings.namaToko;
+            document.getElementById('set-pemilik').value = window.storeSettings.pemilik || '';
+            document.getElementById('set-wa').value = window.storeSettings.wa;
+            document.getElementById('set-email').value = window.storeSettings.email || '';
+            document.getElementById('set-alamat').value = window.storeSettings.alamat;
+            document.getElementById('set-syarat').value = window.storeSettings.syarat;
+            document.getElementById('sidebar-store-name').innerText = window.storeSettings.namaToko;
+            if(document.getElementById('mobile-store-name')) document.getElementById('mobile-store-name').innerText = window.storeSettings.namaToko;
         }
 
         function handleSaveSettings(e) {
             e.preventDefault();
-            storeSettings = {
+            window.storeSettings = {
                 namaToko: document.getElementById('set-nama-toko').value,
                 pemilik: document.getElementById('set-pemilik').value,
                 wa: document.getElementById('set-wa').value,
@@ -1980,8 +2067,8 @@
                 syarat: document.getElementById('set-syarat').value
             };
             saveData();
-            document.getElementById('sidebar-store-name').innerText = storeSettings.namaToko;
-            if(document.getElementById('mobile-store-name')) document.getElementById('mobile-store-name').innerText = storeSettings.namaToko;
+            document.getElementById('sidebar-store-name').innerText = window.storeSettings.namaToko;
+            if(document.getElementById('mobile-store-name')) document.getElementById('mobile-store-name').innerText = window.storeSettings.namaToko;
             alert('Pengaturan toko berhasil disimpan!');
         }
 
@@ -1991,9 +2078,9 @@
             
             container.innerHTML = `
                 <div style="text-align: center; margin-bottom: 8px;">
-                    <h3>${storeSettings.namaToko}</h3>
-                    <p>${storeSettings.alamat}</p>
-                    <p>WA: ${storeSettings.wa} | ${storeSettings.email || ''}</p>
+                    <h3>${window.storeSettings.namaToko}</h3>
+                    <p>${window.storeSettings.alamat}</p>
+                    <p>WA: ${window.storeSettings.wa} | ${window.storeSettings.email || ''}</p>
                     <p>--------------------------------</p>
                     <b>${type === 'FINAL' ? 'STRUK PELUNASAN' : 'TANDA TERIMA SERVICE'}</b>
                     <p>--------------------------------</p>
@@ -2007,12 +2094,12 @@
                 <div>DP: Rp ${s.dp.toLocaleString('id-ID')}</div>
                 <div><b>Sisa: Rp ${(s.biaya - s.dp).toLocaleString('id-ID')}</b></div>
                 <p>--------------------------------</p>
-                <div style="font-size: 9px; white-space: pre-line;">${storeSettings.syarat}</div>
+                <div style="font-size: 9px; white-space: pre-line;">${window.storeSettings.syarat}</div>
                 <p>--------------------------------</p>
                 <div style="text-align: center; margin-top: 6px;">
                     <p style="font-family: monospace; font-size: 16px; font-weight: bold; letter-spacing: 2px;">${barcodeSim}</p>
                     <p style="font-size: 9px; color: #555;">[ Barcode Nota: ${s.nota} ]</p>
-                    <p style="margin-top: 4px;">Teknisi: ${s.teknisi} | Pimpinan: ${storeSettings.pemilik || '-'}</p>
+                    <p style="margin-top: 4px;">Teknisi: ${s.teknisi} | Pimpinan: ${window.storeSettings.pemilik || '-'}</p>
                     <p style="font-style: italic; margin-top: 4px;">Terima Kasih atas Kepercayaan Anda!</p>
                 </div>
             `;
