@@ -252,7 +252,7 @@
                         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 border-b pb-4">
                             <div>
                                 <h3 class="font-bold text-slate-800 text-base md:text-lg">Pendaftaran Unit Service Baru</h3>
-                                <p class="text-xs text-slate-500">Lengkapi data pemilik, unit perangkat, dan pilihan teknisi</p>
+                                <p class="text-xs text-slate-500">Lengkapi data pemilik, unit perangkat, dan pilihan teknisi (Status awal otomatis: Proses)</p>
                             </div>
                             <div class="bg-slate-100 px-4 py-2 rounded-lg border border-slate-200 text-left md:text-right w-full md:w-auto">
                                 <span class="text-[10px] text-slate-500 uppercase font-bold block">Nomor Nota Otomatis</span>
@@ -330,45 +330,33 @@
                         </div>
 
                         <div class="space-y-3 border-t pt-4">
-                            <h4 class="font-bold text-xs uppercase tracking-wider text-sky-800 bg-sky-50 px-3 py-1.5 rounded inline-block">3. Kerusakan, Sparepart & Biaya</h4>
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div class="md:col-span-2">
+                            <h4 class="font-bold text-xs uppercase tracking-wider text-sky-800 bg-sky-50 px-3 py-1.5 rounded inline-block">3. Kerusakan & Biaya</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
                                     <label class="block text-xs font-semibold text-slate-700 mb-1">Diagnosa Kerusakan <span class="text-rose-500">*</span></label>
                                     <textarea id="rep-kerusakan" required rows="3" placeholder="LCD Blank Hitam..." class="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-sky-500 outline-none"></textarea>
                                 </div>
-                                <div class="space-y-3">
-                                    <div>
-                                        <label class="block text-xs font-semibold text-slate-700 mb-1">Gunakan Sparepart dari Stok</label>
-                                        <select id="rep-sparepart-select" onchange="handleSelectSparepartRepair()" class="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-sky-500 outline-none">
-                                            <option value="">-- Jasa Saja / Manual --</option>
-                                        </select>
+                                <div class="space-y-4">
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label class="block text-xs font-semibold text-slate-700 mb-1">Teknisi PJ <span class="text-rose-500">*</span></label>
+                                            <select id="rep-teknisi" required class="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-sky-500 outline-none"></select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-semibold text-slate-700 mb-1">Garansi (Hari)</label>
+                                            <input type="number" id="rep-garansi" min="0" value="30" class="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-sky-500 outline-none font-bold text-sky-700">
+                                        </div>
                                     </div>
-                                    <div>
-                                        <label class="block text-xs font-semibold text-slate-700 mb-1">Jenis Pemakaian Part</label>
-                                        <select id="rep-jenis-pemakaian" class="w-full text-xs p-2.5 rounded-lg border border-slate-300 font-bold text-indigo-700">
-                                            <option value="Dalam Toko">Dipakai di Toko (Service HP)</option>
-                                            <option value="Luar Toko">Beli Putus / Bawa Keluar (Non-Service)</option>
-                                        </select>
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label class="block text-xs font-semibold text-slate-700 mb-1">Total Harga Jual (Rp) <span class="text-rose-500">*</span></label>
+                                            <input type="number" id="rep-biaya" required min="0" placeholder="0" class="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-sky-500 outline-none font-bold text-slate-800">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-semibold text-slate-700 mb-1">Uang Muka / DP (Rp)</label>
+                                            <input type="number" id="rep-dp" min="0" value="0" class="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-sky-500 outline-none font-bold text-emerald-700">
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200 mt-2">
-                                <div>
-                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Teknisi PJ <span class="text-rose-500">*</span></label>
-                                    <select id="rep-teknisi" required class="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-sky-500 outline-none"></select>
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Total Biaya (Rp) <span class="text-rose-500">*</span></label>
-                                    <input type="number" id="rep-biaya" required min="0" placeholder="0" class="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-sky-500 outline-none font-bold text-slate-800">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Uang Muka / DP (Rp)</label>
-                                    <input type="number" id="rep-dp" min="0" value="0" class="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-sky-500 outline-none font-bold text-emerald-700">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Garansi (Hari)</label>
-                                    <input type="number" id="rep-garansi" min="0" value="30" class="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-sky-500 outline-none font-bold text-sky-700">
                                 </div>
                             </div>
                         </div>
@@ -390,7 +378,6 @@
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b pb-4">
                         <div class="flex flex-wrap gap-1.5" id="status-filter-pills">
                             <button onclick="filterServiceStatus('ALL')" class="status-pill px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-white" data-status="ALL">Semua</button>
-                            <button onclick="filterServiceStatus('Diterima')" class="status-pill px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-600" data-status="Diterima">Diterima</button>
                             <button onclick="filterServiceStatus('Proses')" class="status-pill px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-600" data-status="Proses">Proses</button>
                             <button onclick="filterServiceStatus('Selesai')" class="status-pill px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-600" data-status="Selesai">Selesai</button>
                             <button onclick="filterServiceStatus('Diambil')" class="status-pill px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-600" data-status="Diambil">Diambil</button>
@@ -403,14 +390,15 @@
                     </div>
 
                     <div class="overflow-x-auto">
-                        <table class="w-full text-xs text-left min-w-[700px]">
+                        <table class="w-full text-xs text-left min-w-[850px]">
                             <thead class="bg-slate-100 text-slate-700 uppercase font-bold border-b">
                                 <tr>
                                     <th class="py-3 px-3">Nota & Tgl</th>
                                     <th class="py-3 px-3">Pelanggan & WA</th>
                                     <th class="py-3 px-3">Unit HP</th>
                                     <th class="py-3 px-3">Teknisi</th>
-                                    <th class="py-3 px-3">Biaya & DP</th>
+                                    <th class="py-3 px-3">Harga Jual & DP</th>
+                                    <th class="py-3 px-3">Cost Part (HPP) & Est. Profit</th>
                                     <th class="py-3 px-3">Status</th>
                                     <th class="py-3 px-3 text-center">Aksi, Edit & WA</th>
                                 </tr>
@@ -509,7 +497,7 @@
                                         <th class="py-3 px-3 border">Tanggal</th>
                                         <th class="py-3 px-3 border">Unit Perangkat & Kerusakan</th>
                                         <th class="py-3 px-3 border">Teknisi</th>
-                                        <th class="py-3 px-3 border text-right">Biaya (Rp)</th>
+                                        <th class="py-3 px-3 border text-right">Harga Jual (Rp)</th>
                                     </tr>
                                 </thead>
                                 <tbody id="inv-items-tbody" class="divide-y divide-slate-100">
@@ -578,7 +566,7 @@
                             </div>
                             <div class="grid grid-cols-2 gap-3">
                                 <div>
-                                    <label class="block text-xs font-semibold text-slate-700 mb-1">HPP (Modal)</label>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Cost HPP (Modal)</label>
                                     <input type="number" id="sp-hpp" min="0" required class="w-full text-xs p-2.5 rounded-lg border border-slate-300">
                                 </div>
                                 <div>
@@ -606,7 +594,7 @@
                                             <th class="py-2.5 px-3">Kode</th>
                                             <th class="py-2.5 px-3">Nama Part</th>
                                             <th class="py-2.5 px-3">Stok</th>
-                                            <th class="py-2.5 px-3">HPP</th>
+                                            <th class="py-2.5 px-3">Cost HPP</th>
                                             <th class="py-2.5 px-3">Harga Jual</th>
                                             <th class="py-2.5 px-3 text-center">Aksi</th>
                                         </tr>
@@ -617,14 +605,15 @@
                         </div>
 
                         <div class="bg-white p-4 md:p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
-                            <h4 class="font-bold text-slate-800 text-sm uppercase tracking-wide border-b pb-3">Riwayat Pemakaian Sparepart (Dalam Toko vs Luar Toko)</h4>
+                            <h4 class="font-bold text-slate-800 text-sm uppercase tracking-wide border-b pb-3">Riwayat Pemakaian Sparepart (Resmi Selesai)</h4>
                             <div class="overflow-x-auto">
-                                <table class="w-full text-xs text-left min-w-[500px]">
+                                <table class="w-full text-xs text-left min-w-[550px]">
                                     <thead class="bg-slate-100 text-slate-700 uppercase font-bold border-b">
                                         <tr>
                                             <th class="py-2.5 px-3">Tanggal / Nota</th>
                                             <th class="py-2.5 px-3">Nama Sparepart</th>
                                             <th class="py-2.5 px-3">Pelanggan / PJ</th>
+                                            <th class="py-2.5 px-3">Cost (HPP)</th>
                                             <th class="py-2.5 px-3">Kategori Pemakaian</th>
                                         </tr>
                                     </thead>
@@ -824,8 +813,8 @@
                 <div class="bg-white p-4 md:p-6 rounded-xl border border-slate-200 shadow-sm space-y-6">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b pb-4">
                         <div>
-                            <h3 class="font-bold text-slate-800 text-base md:text-lg">Laporan Laba Rugi Otomatis</h3>
-                            <p class="text-xs text-slate-500">Perhitungan pendapatan bersih toko berdasarkan omset, HPP sparepart, pengeluaran kas, dan komisi teknisi.</p>
+                            <h3 class="font-bold text-slate-800 text-base md:text-lg">Laporan Laba Rugi Otomatis (Cost vs Harga Jual & Profit)</h3>
+                            <p class="text-xs text-slate-500">Perhitungan pendapatan bersih toko berdasarkan omset (harga jual), cost HPP sparepart terpakai (dimasukkan saat selesai), pengeluaran kas, dan komisi teknisi.</p>
                         </div>
                         <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
                             <select id="lr-bulan" onchange="renderLabaRugiReport()" class="text-xs p-2 rounded-lg border border-slate-300 font-bold bg-white flex-1 md:flex-none">
@@ -850,24 +839,24 @@
 
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div class="bg-sky-50 border border-sky-200 p-4 rounded-xl">
-                                <span class="text-xs font-bold text-sky-800 uppercase">Total Pendapatan (Omset)</span>
+                                <span class="text-xs font-bold text-sky-800 uppercase">Total Harga Jual (Omset Selesai)</span>
                                 <h3 class="text-xl md:text-2xl font-extrabold text-sky-900 mt-1" id="lr-val-omset">Rp 0</h3>
-                                <p class="text-[11px] text-sky-700 mt-1">Total biaya service / penjualan</p>
+                                <p class="text-[11px] text-sky-700 mt-1">Akumulasi total harga service lunas</p>
                             </div>
                             <div class="bg-rose-50 border border-rose-200 p-4 rounded-xl">
-                                <span class="text-xs font-bold text-rose-800 uppercase">HPP (Modal Sparepart)</span>
+                                <span class="text-xs font-bold text-rose-800 uppercase">Total Cost / HPP Modal Part</span>
                                 <h3 class="text-xl md:text-2xl font-extrabold text-rose-900 mt-1" id="lr-val-hpp">Rp 0</h3>
-                                <p class="text-[11px] text-rose-700 mt-1">Total modal sparepart terpakai</p>
+                                <p class="text-[11px] text-rose-700 mt-1">Modal sparepart dari unit status Selesai/Diambil</p>
                             </div>
                             <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl">
                                 <span class="text-xs font-bold text-emerald-800 uppercase">Laba Kotor (Gross Profit)</span>
                                 <h3 class="text-xl md:text-2xl font-extrabold text-emerald-900 mt-1" id="lr-val-labakotor">Rp 0</h3>
-                                <p class="text-[11px] text-emerald-700 mt-1">Omset dikurangi HPP Part</p>
+                                <p class="text-[11px] text-emerald-700 mt-1">Harga Jual dikurangi Cost HPP Part</p>
                             </div>
                         </div>
 
                         <div class="bg-white border rounded-xl p-4 md:p-5 space-y-4">
-                            <h4 class="font-bold text-xs uppercase tracking-wider text-slate-700 border-b pb-2">Rincian Beban Operasional & Gaji</h4>
+                            <h4 class="font-bold text-xs uppercase tracking-wider text-slate-700 border-b pb-2">Rincian Beban Operasional, Komisi & Net Profit</h4>
                             <div class="space-y-3 text-xs">
                                 <div class="flex justify-between py-1 border-b border-dashed">
                                     <span class="text-slate-600">Total Pengeluaran Kas Operasional (Beban Toko)</span>
@@ -878,7 +867,7 @@
                                     <span class="font-bold text-amber-600" id="lr-val-gaji">Rp 0</span>
                                 </div>
                                 <div class="flex justify-between py-2 text-sm font-bold bg-purple-50 p-3 rounded-lg border border-purple-200">
-                                    <span class="text-purple-900 uppercase">Laba Bersih (Net Profit)</span>
+                                    <span class="text-purple-900 uppercase">Laba Bersih (Net Profit / Keuntungan)</span>
                                     <span class="text-purple-900 text-sm md:text-base font-extrabold" id="lr-val-lababersih">Rp 0</span>
                                 </div>
                             </div>
@@ -886,7 +875,7 @@
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
                             <div class="bg-white border rounded-xl p-4 space-y-3">
-                                <h5 class="font-bold text-xs uppercase text-slate-700 border-b pb-2">Ringkasan Pemakaian Sparepart Periode Ini</h5>
+                                <h5 class="font-bold text-xs uppercase text-slate-700 border-b pb-2">Ringkasan Cost & Profit per Service (Resmi Selesai)</h5>
                                 <div id="lr-sparepart-summary" class="text-xs space-y-1 text-slate-600 max-h-40 overflow-y-auto"></div>
                             </div>
                             <div class="bg-white border rounded-xl p-4 space-y-3">
@@ -978,6 +967,36 @@
         </div>
     </main>
 
+    <!-- MODAL PILIH SPAREPART SAAT STATUS SELESAI -->
+    <div id="modal-select-part" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-5 md:p-6 space-y-4">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="font-bold text-slate-800 text-base">Pilih Sparepart Digunakan (<span id="modal-part-nota" class="font-mono text-sky-700"></span>)</h3>
+                <button onclick="closePartModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div class="space-y-3 text-xs">
+                <p class="text-slate-500">Unit ini diubah menjadi status **Selesai**. Silakan pilih sparepart yang dipakai untuk menghitung Cost (HPP) dan profit secara otomatis.</p>
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Pilih Sparepart dari Stok</label>
+                    <select id="modal-part-select" class="w-full p-2.5 rounded-lg border border-slate-300 font-bold">
+                        <option value="">-- Tanpa Sparepart (Jasa Saja) --</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Jenis Pemakaian Part</label>
+                    <select id="modal-part-jenis" class="w-full p-2.5 rounded-lg border border-slate-300 font-bold text-indigo-700">
+                        <option value="Dalam Toko">Dipakai di Toko (Service HP)</option>
+                        <option value="Luar Toko">Beli Putus / Bawa Keluar (Non-Service)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex justify-end space-x-2 border-t pt-3">
+                <button onclick="closePartModal()" class="px-4 py-2 border rounded-lg text-xs">Batal</button>
+                <button onclick="confirmPartSelection()" class="px-5 py-2 bg-sky-600 text-white rounded-lg text-xs font-bold">Simpan & Hitung Cost</button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL PAYMENT -->
     <div id="modal-payment" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-5 md:p-6 space-y-4">
@@ -989,13 +1008,13 @@
                 <div class="bg-slate-50 p-3 rounded-lg space-y-1">
                     <p class="flex justify-between"><span>No. Nota:</span><b id="pay-modal-nota"></b></p>
                     <p class="flex justify-between"><span>Pelanggan:</span><b id="pay-modal-nama"></b></p>
-                    <p class="flex justify-between"><span>Total Biaya:</span><b id="pay-modal-biaya"></b></p>
+                    <p class="flex justify-between"><span>Harga Jual:</span><b id="pay-modal-biaya"></b></p>
                     <p class="flex justify-between text-emerald-600"><span>DP:</span><b id="pay-modal-dp"></b></p>
                     <hr class="border-slate-200">
-                    <p class="flex justify-between text-base font-bold text-rose-600"><span>Sisa:</span><span id="pay-modal-sisa"></span></p>
+                    <p class="flex justify-between text-base font-bold text-rose-600"><span>Sisa Tagihan:</span><span id="pay-modal-sisa"></span></p>
                 </div>
                 <div>
-                    <label class="block font-semibold text-slate-700 mb-1">Metode</label>
+                    <label class="block font-semibold text-slate-700 mb-1">Metode Pembayaran</label>
                     <select id="pay-modal-method" class="w-full p-2.5 rounded-lg border border-slate-300 font-bold">
                         <option value="CASH">Tunai</option>
                         <option value="QRIS">QRIS</option>
@@ -1037,7 +1056,7 @@
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block font-semibold text-slate-700 mb-1">Total Biaya (Rp)</label>
+                        <label class="block font-semibold text-slate-700 mb-1">Harga Jual (Rp)</label>
                         <input type="number" id="edit-biaya" min="0" required class="w-full p-2 rounded-lg border border-slate-300 font-bold">
                     </div>
                     <div>
@@ -1139,7 +1158,7 @@
                 if(window.loadSettingsForm) window.loadSettingsForm();
                 if(window.generateNextNotaNumber) window.generateNextNotaNumber();
                 if(window.renderStaffDropdowns) window.renderStaffDropdowns();
-                if(window.renderSparepartOptionsInRepair) window.renderSparepartOptionsInRepair();
+                if(window.renderSparepartOptionsInModal) window.renderSparepartOptionsInModal();
                 if(window.renderClientDropdownForInvoice) window.renderClientDropdownForInvoice();
                 if(window.renderDashboard) window.renderDashboard();
                 if(window.renderServiceTable) window.renderServiceTable();
@@ -1184,6 +1203,7 @@
         let selectedPattern = [];
         let activeFilterStatus = 'ALL';
         let currentSettlingNota = null;
+        let pendingStatusNota = null;
 
         function cleanWhatsAppNumber(numberStr) {
             if (!numberStr) return '';
@@ -1201,7 +1221,7 @@
             loadSettingsForm();
             generateNextNotaNumber();
             renderStaffDropdowns();
-            renderSparepartOptionsInRepair();
+            renderSparepartOptionsInModal();
             renderClientDropdownForInvoice();
             renderDashboard();
             renderServiceTable();
@@ -1255,7 +1275,6 @@
             localStorage.setItem('jeriko_kas_db', JSON.stringify(window.dbKas));
             localStorage.setItem('jeriko_settings', JSON.stringify(window.storeSettings));
 
-            // Simpan juga ke Firebase Cloud
             if (window.saveDataToFirebase) {
                 window.saveDataToFirebase();
             }
@@ -1335,20 +1354,13 @@
             });
         }
 
-        function renderSparepartOptionsInRepair() {
-            const select = document.getElementById('rep-sparepart-select');
-            select.innerHTML = '<option value="">-- Jasa Saja / Manual --</option>';
+        function renderSparepartOptionsInModal() {
+            const select = document.getElementById('modal-part-select');
+            if(!select) return;
+            select.innerHTML = '<option value="">-- Tanpa Sparepart (Jasa Saja) --</option>';
             window.dbSparepart.forEach(sp => {
-                select.innerHTML += `<option value="${sp.id}">${sp.nama} (Stok: ${sp.stok}) - Rp ${sp.harga.toLocaleString('id-ID')}</option>`;
+                select.innerHTML += `<option value="${sp.id}">${sp.nama} (Stok: ${sp.stok}) - HPP Cost: Rp ${sp.hpp.toLocaleString('id-ID')} | Jual: Rp ${sp.harga.toLocaleString('id-ID')}</option>`;
             });
-        }
-
-        function handleSelectSparepartRepair() {
-            const spId = document.getElementById('rep-sparepart-select').value;
-            if(spId) {
-                const part = window.dbSparepart.find(p => p.id === spId);
-                if(part) document.getElementById('rep-biaya').value = part.harga;
-            }
         }
 
         function renderClientDropdownForInvoice() {
@@ -1441,30 +1453,6 @@
         function handleSaveRepair(e) {
             e.preventDefault();
             const notaNumber = document.getElementById('repair-auto-nota').innerText;
-            const spId = document.getElementById('rep-sparepart-select').value;
-            const jenisPemakaian = document.getElementById('rep-jenis-pemakaian').value;
-            let usedPart = null;
-
-            if(spId) {
-                const partIndex = window.dbSparepart.findIndex(p => p.id === spId);
-                if(partIndex !== -1 && window.dbSparepart[partIndex].stok > 0) {
-                    window.dbSparepart[partIndex].stok -= 1;
-                    usedPart = { id: window.dbSparepart[partIndex].id, nama: window.dbSparepart[partIndex].nama, hpp: window.dbSparepart[partIndex].hpp };
-                    window.dbSparepartUsage.unshift({
-                        id: Date.now().toString(),
-                        tanggal: new Date().toLocaleDateString('id-ID'),
-                        nota: notaNumber,
-                        namaPart: window.dbSparepart[partIndex].nama,
-                        pelanggan: document.getElementById('rep-nama').value,
-                        jenis: jenisPemakaian,
-                        hpp: window.dbSparepart[partIndex].hpp
-                    });
-                } else {
-                    alert('Stok sparepart habis!');
-                    return;
-                }
-            }
-
             const biaya = parseInt(document.getElementById('rep-biaya').value) || 0;
             const dp = parseInt(document.getElementById('rep-dp').value) || 0;
 
@@ -1481,12 +1469,12 @@
                 pola: document.getElementById('rep-pola-sequence').value,
                 kerusakan: document.getElementById('rep-kerusakan').value,
                 teknisi: document.getElementById('rep-teknisi').value,
-                usedPart: usedPart,
+                usedPart: null, // Cost dihitung 0 di awal sebelum status selesai
                 biaya: biaya,
                 dp: dp,
                 sisa: biaya - dp,
                 garansiHari: parseInt(document.getElementById('rep-garansi').value) || 30,
-                status: 'Diterima'
+                status: 'Proses' // Status otomatis "Proses" saat pertama kali diinput
             };
 
             window.dbService.unshift(serviceData);
@@ -1496,7 +1484,6 @@
 
             saveData();
             renderSparepartTable();
-            renderSparepartUsageTable();
             renderCustomerTable();
             renderClientDropdownForInvoice();
             renderLabaRugiReport();
@@ -1651,7 +1638,6 @@
 
         function getStatusBadge(status) {
             const badges = {
-                'Diterima': '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700">Diterima</span>',
                 'Proses': '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">Proses</span>',
                 'Selesai': '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-100 text-sky-800">Selesai</span>',
                 'Diambil': '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">Diambil</span>',
@@ -1676,8 +1662,21 @@
 
             filtered.forEach(s => {
                 const sisa = s.biaya - s.dp;
+                
+                // Cost HPP dan Profit hanya muncul jika status sudah Selesai atau Diambil
+                let costHpp = 0;
+                let costDisplay = '<span class="text-slate-400 italic">Belum Selesai (Proses)</span>';
+                let profitDisplay = '<span class="text-slate-400 font-medium">Rp 0</span>';
+
+                if (s.status === 'Selesai' || s.status === 'Diambil') {
+                    costHpp = s.usedPart ? (s.usedPart.hpp || 0) : 0;
+                    const partName = s.usedPart ? s.usedPart.nama : 'Tanpa Sparepart';
+                    costDisplay = `<span class="text-rose-600 font-semibold">Part: ${partName} (Cost: Rp ${costHpp.toLocaleString('id-ID')})</span>`;
+                    profitDisplay = `<span class="text-emerald-700 font-bold">Profit: Rp ${(s.biaya - costHpp).toLocaleString('id-ID')}</span>`;
+                }
+
                 const cleanWa = cleanWhatsAppNumber(s.wa);
-                const waText = encodeURIComponent(`Halo Kak *${s.nama}*, update status unit *${s.tipe}* (Nota: ${s.nota}) di *${window.storeSettings.namaToko}* saat ini adalah: *${s.status}*. Total Biaya: Rp ${s.biaya.toLocaleString('id-ID')} (Sisa: Rp ${sisa.toLocaleString('id-ID')}). Terima kasih.`);
+                const waText = encodeURIComponent(`Halo Kak *${s.nama}*, update status unit *${s.tipe}* (Nota: ${s.nota}) di *${window.storeSettings.namaToko}* saat ini adalah: *${s.status}*. Harga Jual: Rp ${s.biaya.toLocaleString('id-ID')} (Sisa Tagihan: Rp ${sisa.toLocaleString('id-ID')}). Terima kasih.`);
                 
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-50">
@@ -1685,11 +1684,14 @@
                         <td class="py-3 px-3"><b>${s.nama}</b><br><a href="https://wa.me/${cleanWa}?text=${waText}" target="_blank" class="text-emerald-600 font-bold hover:underline"><i class="fa-brands fa-whatsapp"></i> ${s.wa}</a></td>
                         <td class="py-3 px-3">${s.tipe}<br><span class="text-[10px] text-slate-400">IMEI: ${s.imei || '-'}</span></td>
                         <td class="py-3 px-3">${s.teknisi}</td>
-                        <td class="py-3 px-3">Rp ${s.biaya.toLocaleString('id-ID')}<br><span class="text-[10px] text-emerald-600">DP: Rp ${s.dp.toLocaleString('id-ID')}</span></td>
+                        <td class="py-3 px-3"><span class="font-bold text-slate-800">Rp ${s.biaya.toLocaleString('id-ID')}</span><br><span class="text-[10px] text-emerald-600">DP: Rp ${s.dp.toLocaleString('id-ID')}</span></td>
+                        <td class="py-3 px-3">
+                            ${costDisplay}<br>
+                            ${profitDisplay}
+                        </td>
                         <td class="py-3 px-3">${getStatusBadge(s.status)}</td>
                         <td class="py-3 px-3 text-center space-x-1">
                             <select onchange="handleUpdateStatus('${s.nota}', this.value)" class="text-[11px] p-1 border rounded bg-white">
-                                <option value="Diterima" ${s.status === 'Diterima' ? 'selected' : ''}>Diterima</option>
                                 <option value="Proses" ${s.status === 'Proses' ? 'selected' : ''}>Proses</option>
                                 <option value="Selesai" ${s.status === 'Selesai' ? 'selected' : ''}>Selesai</option>
                                 <option value="Diambil" ${s.status === 'Diambil' ? 'selected' : ''}>Diambil (Lunas)</option>
@@ -1745,24 +1747,105 @@
         function handleUpdateStatus(nota, newStatus) {
             const idx = window.dbService.findIndex(s => s.nota === nota);
             if(idx === -1) return;
-            if(newStatus === 'Diambil') {
+
+            const serviceItem = window.dbService[idx];
+
+            if (newStatus === 'Selesai' && serviceItem.status === 'Proses') {
+                // Munculkan modal pemilihan sparepart saat status diubah menjadi Selesai
+                pendingStatusNota = nota;
+                document.getElementById('modal-part-nota').innerText = nota;
+                renderSparepartOptionsInModal();
+                document.getElementById('modal-select-part').classList.remove('hidden');
+                return;
+            }
+
+            if (newStatus === 'Diambil') {
+                if (serviceItem.status === 'Proses') {
+                    // Jika langsung loncat ke Diambil dari Proses, minta pilih part dulu
+                    pendingStatusNota = nota;
+                    document.getElementById('modal-part-nota').innerText = nota;
+                    renderSparepartOptionsInModal();
+                    document.getElementById('modal-select-part').classList.remove('hidden');
+                    return;
+                }
+
                 currentSettlingNota = nota;
-                const s = window.dbService[idx];
-                document.getElementById('pay-modal-nota').innerText = s.nota;
-                document.getElementById('pay-modal-nama').innerText = s.nama;
-                document.getElementById('pay-modal-biaya').innerText = 'Rp ' + s.biaya.toLocaleString('id-ID');
-                document.getElementById('pay-modal-dp').innerText = 'Rp ' + s.dp.toLocaleString('id-ID');
-                document.getElementById('pay-modal-sisa').innerText = 'Rp ' + (s.biaya - s.dp).toLocaleString('id-ID');
+                document.getElementById('pay-modal-nota').innerText = serviceItem.nota;
+                document.getElementById('pay-modal-nama').innerText = serviceItem.nama;
+                document.getElementById('pay-modal-biaya').innerText = 'Rp ' + serviceItem.biaya.toLocaleString('id-ID');
+                document.getElementById('pay-modal-dp').innerText = 'Rp ' + serviceItem.dp.toLocaleString('id-ID');
+                document.getElementById('pay-modal-sisa').innerText = 'Rp ' + (serviceItem.biaya - serviceItem.dp).toLocaleString('id-ID');
                 document.getElementById('modal-payment').classList.remove('hidden');
             } else {
-                window.dbService[idx].status = newStatus;
+                serviceItem.status = newStatus;
                 saveData();
                 renderServiceTable();
+                renderSparepartTable();
+                renderSparepartUsageTable();
                 renderLabaRugiReport();
             }
         }
 
-        function closePaymentModal() { document.getElementById('modal-payment').classList.add('hidden'); renderServiceTable(); renderLabaRugiReport(); }
+        function closePartModal() {
+            document.getElementById('modal-select-part').classList.add('hidden');
+            renderServiceTable();
+        }
+
+        function confirmPartSelection() {
+            if(!pendingStatusNota) return;
+            const idx = window.dbService.findIndex(s => s.nota === pendingStatusNota);
+            if(idx === -1) return;
+
+            const serviceItem = window.dbService[idx];
+            const spId = document.getElementById('modal-part-select').value;
+            const jenisPemakaian = document.getElementById('modal-part-jenis').value;
+
+            if (spId) {
+                const partIndex = window.dbSparepart.findIndex(p => p.id === spId);
+                if (partIndex !== -1 && window.dbSparepart[partIndex].stok > 0) {
+                    // Potong stok
+                    window.dbSparepart[partIndex].stok -= 1;
+
+                    // Set usedPart pada service
+                    serviceItem.usedPart = {
+                        id: window.dbSparepart[partIndex].id,
+                        nama: window.dbSparepart[partIndex].nama,
+                        hpp: window.dbSparepart[partIndex].hpp
+                    };
+
+                    // Catat ke riwayat pemakaian sparepart
+                    window.dbSparepartUsage.unshift({
+                        id: Date.now().toString(),
+                        tanggal: new Date().toLocaleDateString('id-ID'),
+                        nota: serviceItem.nota,
+                        namaPart: window.dbSparepart[partIndex].nama,
+                        pelanggan: serviceItem.nama,
+                        jenis: jenisPemakaian,
+                        hpp: window.dbSparepart[partIndex].hpp
+                    });
+                } else {
+                    alert('Stok sparepart habis atau tidak valid!');
+                    return;
+                }
+            } else {
+                serviceItem.usedPart = { id: '-', nama: 'Tanpa Sparepart', hpp: 0 };
+            }
+
+            serviceItem.status = 'Selesai';
+            saveData();
+            closePartModal();
+            renderSparepartTable();
+            renderSparepartUsageTable();
+            renderServiceTable();
+            renderLabaRugiReport();
+            alert(`Status nota ${serviceItem.nota} berhasil diubah ke Selesai dan Cost HPP berhasil dicatat!`);
+        }
+
+        function closePaymentModal() { 
+            document.getElementById('modal-payment').classList.add('hidden'); 
+            renderServiceTable(); 
+            renderLabaRugiReport(); 
+        }
 
         function confirmPaymentAndFinish() {
             if(!currentSettlingNota) return;
@@ -1776,6 +1859,8 @@
                 }
                 saveData();
                 closePaymentModal();
+                renderSparepartTable();
+                renderSparepartUsageTable();
                 renderLabaRugiReport();
                 showReceiptModal(s, 'FINAL');
             }
@@ -1791,6 +1876,7 @@
                         <td class="py-2.5 px-3"><b>${u.nota}</b><br><span class="text-[10px] text-slate-400">${u.tanggal}</span></td>
                         <td class="py-2.5 px-3 font-semibold text-slate-800">${u.namaPart}</td>
                         <td class="py-2.5 px-3">${u.pelanggan}</td>
+                        <td class="py-2.5 px-3 font-bold text-rose-600">Rp ${(u.hpp || 0).toLocaleString('id-ID')}</td>
                         <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${badgeColor}">${u.jenis}</span></td>
                     </tr>
                 `;
@@ -1801,7 +1887,7 @@
             const tbody = document.getElementById('staff-table-body');
             tbody.innerHTML = '';
             window.dbStaff.forEach(stf => {
-                const completedUnits = window.dbService.filter(s => s.teknisi === stf.nama && s.status === 'Diambil');
+                const completedUnits = window.dbService.filter(s => s.teknisi === stf.nama && (s.status === 'Diambil' || s.status === 'Selesai'));
                 const totalJasa = completedUnits.reduce((acc, curr) => acc + curr.biaya, 0);
                 const estimatedSalary = (totalJasa * stf.komisi) / 100;
                 tbody.innerHTML += `
@@ -1875,7 +1961,7 @@
                         <td class="py-2.5 px-3 font-mono">${p.kode}</td>
                         <td class="py-2.5 px-3 font-semibold">${p.nama}</td>
                         <td class="py-2.5 px-3 font-bold">${p.stok}</td>
-                        <td class="py-2.5 px-3">Rp ${p.hpp.toLocaleString('id-ID')}</td>
+                        <td class="py-2.5 px-3 text-rose-600 font-semibold">Rp ${p.hpp.toLocaleString('id-ID')}</td>
                         <td class="py-2.5 px-3 font-bold text-emerald-700">Rp ${p.harga.toLocaleString('id-ID')}</td>
                         <td class="py-2.5 px-3 text-center"><button onclick="deleteSparepart('${p.id}')" class="text-rose-600 font-bold">Hapus</button></td>
                     </tr>
@@ -1895,11 +1981,11 @@
             });
             saveData();
             renderSparepartTable();
-            renderSparepartOptionsInRepair();
+            renderSparepartOptionsInModal();
             e.target.reset();
         }
 
-        function deleteSparepart(id) { window.dbSparepart = window.dbSparepart.filter(p => p.id !== id); saveData(); renderSparepartTable(); renderSparepartOptionsInRepair(); }
+        function deleteSparepart(id) { window.dbSparepart = window.dbSparepart.filter(p => p.id !== id); saveData(); renderSparepartTable(); renderSparepartOptionsInModal(); }
 
         function renderKasTable() {
             const tbody = document.getElementById('kas-table-body');
@@ -1946,8 +2032,9 @@
             const namaBulanText = bulan === 'ALL' ? 'Semua Bulan' : namaBulanSelect.options[namaBulanSelect.selectedIndex].text;
             document.getElementById('lr-periode-label').innerText = `Laporan Laba Rugi Periode: ${namaBulanText} ${tahun}`;
 
+            // Hanya menghitung unit yang statusnya Diambil atau Selesai
             let filteredService = window.dbService.filter(s => {
-                if (s.status !== 'Diambil') return false;
+                if (s.status !== 'Diambil' && s.status !== 'Selesai') return false;
 
                 const parts = s.tanggal.split('/');
                 if(parts.length === 3) {
@@ -1989,7 +2076,7 @@
 
             let totalGajiKomisi = 0;
             window.dbStaff.forEach(stf => {
-                const stfUnits = filteredService.filter(s => s.teknisi === stf.nama && s.status === 'Diambil');
+                const stfUnits = filteredService.filter(s => s.teknisi === stf.nama);
                 const stfOmset = stfUnits.reduce((acc, curr) => acc + curr.biaya, 0);
                 totalGajiKomisi += (stfOmset * stf.komisi) / 100;
             });
@@ -2012,11 +2099,23 @@
 
             const spSummaryContainer = document.getElementById('lr-sparepart-summary');
             spSummaryContainer.innerHTML = '';
-            if(filteredUsage.length === 0) {
-                spSummaryContainer.innerHTML = '<p class="text-slate-400 italic">Tidak ada pemakaian sparepart pada periode ini.</p>';
+            if(filteredService.length === 0) {
+                spSummaryContainer.innerHTML = '<p class="text-slate-400 italic">Tidak ada transaksi service selesai pada periode ini.</p>';
             } else {
-                filteredUsage.forEach(u => {
-                    spSummaryContainer.innerHTML += `<div class="flex justify-between border-b border-slate-100 py-1"><span>• ${u.namaPart} (${u.nota})</span><span class="font-bold">Modal: Rp ${(u.hpp || 0).toLocaleString('id-ID')}</span></div>`;
+                filteredService.forEach(s => {
+                    const cHpp = s.usedPart ? (s.usedPart.hpp || 0) : 0;
+                    const pFt = s.biaya - cHpp;
+                    const partName = s.usedPart ? s.usedPart.nama : '-';
+                    spSummaryContainer.innerHTML += `
+                        <div class="border-b border-slate-100 py-1 flex justify-between items-center">
+                            <span><b>${s.nota}</b> (${s.tipe}) [Part: ${partName}]</span>
+                            <span class="text-right">
+                                <span class="text-slate-500">Jual: Rp ${s.biaya.toLocaleString('id-ID')}</span> | 
+                                <span class="text-rose-600">Cost: Rp ${cHpp.toLocaleString('id-ID')}</span> → 
+                                <strong class="text-emerald-700">Profit: Rp ${pFt.toLocaleString('id-ID')}</strong>
+                            </span>
+                        </div>
+                    `;
                 });
             }
 
@@ -2090,9 +2189,9 @@
                 <div>Unit: ${s.tipe}</div>
                 <div>Kerusakan: ${s.kerusakan}</div>
                 <p>--------------------------------</p>
-                <div>Total: Rp ${s.biaya.toLocaleString('id-ID')}</div>
+                <div>Harga Jual: Rp ${s.biaya.toLocaleString('id-ID')}</div>
                 <div>DP: Rp ${s.dp.toLocaleString('id-ID')}</div>
-                <div><b>Sisa: Rp ${(s.biaya - s.dp).toLocaleString('id-ID')}</b></div>
+                <div><b>Sisa Tagihan: Rp ${(s.biaya - s.dp).toLocaleString('id-ID')}</b></div>
                 <p>--------------------------------</p>
                 <div style="font-size: 9px; white-space: pre-line;">${window.storeSettings.syarat}</div>
                 <p>--------------------------------</p>
