@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PROJECT JERIKO - Sistem Kasir & Manajemen Toko Pro v7.0</title>
+    <title>PROJECT JERIKO - Sistem Kasir & Audit Keuangan Resmi v9.0</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Google Fonts Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script>
@@ -35,7 +37,6 @@
         .pattern-dot { width: 30px; height: 30px; border-radius: 50%; background: #cbd5e1; border: 2px solid #94a3b8; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; color: white; }
         .pattern-dot.active { background: #0284c7; border-color: #0369a1; box-shadow: 0 0 8px rgba(2, 132, 199, 0.6); }
         
-        /* Media Print Rules */
         @media print {
             body * { visibility: hidden; }
             #printable-area, #printable-area * { visibility: visible; }
@@ -43,11 +44,8 @@
             .no-print { display: none !important; }
         }
 
-        /* Thermal Print Styles (58mm / 80mm) */
         .thermal-print-58 { width: 58mm; padding: 4px; font-family: monospace; font-size: 10px; line-height: 1.2; }
         .thermal-print-80 { width: 80mm; padding: 6px; font-family: monospace; font-size: 11px; line-height: 1.3; }
-
-        /* Dot Matrix Print Styles */
         .dotmatrix-print { width: 100%; max-width: 210mm; font-family: 'Courier New', Courier, monospace; font-size: 12px; line-height: 1.4; border: 1px dashed #000; padding: 15px; margin-bottom: 20px; }
     </style>
 </head>
@@ -62,7 +60,7 @@
             <h1 class="font-bold text-sm tracking-wide truncate" id="mobile-store-name">PROJECT JERIKO</h1>
         </div>
         <div class="flex items-center space-x-2">
-            <span class="text-[10px] px-2 py-0.5 rounded bg-sky-600 text-white font-bold">v7.0</span>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-600 text-white font-bold">Audit v9.0</span>
         </div>
     </div>
 
@@ -76,7 +74,7 @@
                     </div>
                     <div>
                         <h1 class="font-bold text-white leading-tight text-sm tracking-wide" id="sidebar-store-name">PROJECT JERIKO</h1>
-                        <span class="text-[10px] text-sky-400 font-medium tracking-wider uppercase">Service & Repair Pro</span>
+                        <span class="text-[10px] text-emerald-400 font-medium tracking-wider uppercase">Audit Edition Pro</span>
                     </div>
                 </div>
                 <button onclick="toggleMobileSidebar()" class="md:hidden text-slate-400 hover:text-white">
@@ -87,7 +85,7 @@
             <nav class="p-3 space-y-1 text-sm font-medium overflow-y-auto max-h-[calc(100vh-140px)]">
                 <button onclick="switchTab('tab-dashboard')" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg transition text-slate-300 hover:bg-slate-800 hover:text-white active-tab" id="btn-tab-dashboard">
                     <i class="fa-solid fa-chart-pie w-5 text-center text-sky-400"></i>
-                    <span>Dashboard</span>
+                    <span>Dashboard & Analisis</span>
                 </button>
                 <button onclick="switchTab('tab-repair')" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg transition text-slate-300 hover:bg-slate-800 hover:text-white" id="btn-tab-repair">
                     <i class="fa-solid fa-square-plus w-5 text-center text-emerald-400"></i>
@@ -123,11 +121,11 @@
                 </button>
                 <button onclick="switchTab('tab-kas')" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg transition text-slate-300 hover:bg-slate-800 hover:text-white" id="btn-tab-kas">
                     <i class="fa-solid fa-wallet w-5 text-center text-purple-400"></i>
-                    <span>Kas & Arus Keuangan</span>
+                    <span>Kas & Rekonsiliasi</span>
                 </button>
                 <button onclick="switchTab('tab-labarugi')" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg transition text-slate-300 hover:bg-slate-800 hover:text-white" id="btn-tab-labarugi">
                     <i class="fa-solid fa-file-invoice-dollar w-5 text-center text-emerald-400"></i>
-                    <span>Laporan Laba Rugi</span>
+                    <span>Laporan Audit Keuangan</span>
                 </button>
                 <button onclick="switchTab('tab-garansi')" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg transition text-slate-300 hover:bg-slate-800 hover:text-white" id="btn-tab-garansi">
                     <i class="fa-solid fa-shield-halved w-5 text-center text-teal-400"></i>
@@ -141,7 +139,7 @@
         </div>
 
         <div class="p-3 border-t border-slate-800 text-xs text-slate-400 flex flex-col gap-1 bg-slate-950/50">
-            <div class="text-[10px] text-slate-400 text-center font-semibold">PROJECT JERIKO v7.0 Pro</div>
+            <div class="text-[10px] text-emerald-400 text-center font-semibold">PROJECT JERIKO v9.0 Audit Pro</div>
         </div>
     </aside>
 
@@ -153,16 +151,16 @@
         <header class="hidden md:flex bg-white border-b border-slate-200 h-16 px-6 items-center justify-between flex-shrink-0 shadow-sm z-10">
             <div class="flex items-center space-x-3">
                 <h2 id="header-page-title" class="text-xl font-bold text-slate-800 tracking-tight">Dashboard Overview</h2>
-                <span id="header-subtitle" class="text-xs px-2.5 py-1 rounded-full bg-sky-50 text-sky-700 font-semibold border border-sky-100">Ringkasan Operasional Service</span>
+                <span id="header-subtitle" class="text-xs px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 font-semibold border border-emerald-100">Sistem Keuangan Audit Terpadu</span>
             </div>
             <div class="flex items-center space-x-4">
                 <div class="text-right">
                     <p id="clock-time" class="text-sm font-bold text-slate-800 font-mono">00:00:00 AM</p>
-                    <p id="clock-date" class="text-[11px] text-slate-500 font-medium">Minggu, 11 Oktober 2026</p>
+                    <p id="clock-date" class="text-[11px] text-slate-500 font-medium">Rabu, 28 Oktober 2026</p>
                 </div>
                 <div class="h-8 w-px bg-slate-200"></div>
                 <div class="flex items-center space-x-2 bg-slate-100 p-1.5 rounded-lg">
-                    <div class="w-7 h-7 rounded-md bg-sky-600 text-white flex items-center justify-center text-xs font-bold">JR</div>
+                    <div class="w-7 h-7 rounded-md bg-emerald-600 text-white flex items-center justify-center text-xs font-bold">JR</div>
                     <span class="text-xs font-semibold text-slate-700 pr-1">Admin Jeriko</span>
                 </div>
             </div>
@@ -170,7 +168,7 @@
 
         <div class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
 
-            <!-- TAB 1: DASHBOARD -->
+            <!-- TAB 1: DASHBOARD & ANALISIS -->
             <section id="tab-dashboard" class="tab-content space-y-6">
                 <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4">
                     <div class="bg-white p-3.5 md:p-4 rounded-xl border border-slate-200 shadow-sm">
@@ -194,9 +192,48 @@
                         <p class="text-[10px] md:text-[11px] text-purple-600 mt-1 font-medium">Laba Bersih: <span id="dash-laba-bersih">Rp 0</span></p>
                     </div>
                     <div class="bg-white p-3.5 md:p-4 rounded-xl border border-slate-200 shadow-sm col-span-2 lg:col-span-1">
-                        <span class="text-[11px] md:text-xs font-semibold text-slate-500 uppercase">Total Aset Toko</span>
-                        <h3 class="text-lg md:text-xl font-bold text-slate-800 mt-2 truncate" id="dash-aset-toko">Rp 0</h3>
-                        <p class="text-[10px] md:text-[11px] text-orange-600 mt-1 font-medium"><i class="fa-solid fa-building"></i> Inventaris</p>
+                        <span class="text-[11px] md:text-xs font-semibold text-slate-500 uppercase">Total Piutang Aktif</span>
+                        <h3 class="text-lg md:text-xl font-bold text-rose-600 mt-2 truncate" id="dash-piutang-total">Rp 0</h3>
+                        <p class="text-[10px] md:text-[11px] text-rose-500 mt-1 font-medium"><i class="fa-solid fa-clock"></i> Belum Lunas</p>
+                    </div>
+                </div>
+
+                <!-- GRAFIK ANALISIS KEUANGAN -->
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b pb-3 gap-2">
+                        <div>
+                            <h4 class="font-bold text-slate-800 text-sm uppercase tracking-wide">Grafik Analisis Finansial (Tahun 2026)</h4>
+                            <p class="text-xs text-slate-500">Komparasi Omset, Laba Kotor, dan Laba Bersih secara real-time.</p>
+                        </div>
+                        <div class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200">
+                            Audit Ready Dashboard
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
+                        <div class="lg:col-span-2 h-80 relative">
+                            <canvas id="financialAnalyticsChart"></canvas>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3 text-xs">
+                            <h5 class="font-bold text-slate-800 uppercase tracking-wide border-b pb-1.5">Ringkasan Finansial</h5>
+                            <p class="text-slate-600 leading-relaxed" id="dashboard-analysis-text">
+                                Grafik memvisualisasikan parameter audit utama. Pastikan saldo kas fisik di laci selalu dicocokkan melalui menu Rekonsiliasi Kas harian.
+                            </p>
+                            <div class="space-y-1.5 pt-2">
+                                <div class="flex justify-between font-mono font-bold bg-white p-2 rounded border">
+                                    <span class="text-slate-600">Omset:</span>
+                                    <span class="text-sky-700" id="dash-summary-omset">Rp 0</span>
+                                </div>
+                                <div class="flex justify-between font-mono font-bold bg-white p-2 rounded border">
+                                    <span class="text-slate-600">Laba Kotor:</span>
+                                    <span class="text-emerald-700" id="dash-summary-gross">Rp 0</span>
+                                </div>
+                                <div class="flex justify-between font-mono font-bold bg-white p-2 rounded border">
+                                    <span class="text-slate-600">Laba Bersih:</span>
+                                    <span class="text-purple-700" id="dash-summary-net">Rp 0</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -208,17 +245,17 @@
                                 <i class="fa-solid fa-plus-circle text-xl text-sky-600 mb-2"></i>
                                 <span class="font-bold text-xs">Service Baru</span>
                             </button>
-                            <button onclick="switchTab('tab-data')" class="p-3 bg-amber-50 border border-amber-200 hover:bg-amber-100 rounded-lg text-amber-800 text-left transition flex flex-col justify-between">
-                                <i class="fa-solid fa-list-check text-xl text-amber-600 mb-2"></i>
-                                <span class="font-bold text-xs">Data & Status</span>
-                            </button>
                             <button onclick="switchTab('tab-labarugi')" class="p-3 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 rounded-lg text-emerald-800 text-left transition flex flex-col justify-between">
                                 <i class="fa-solid fa-file-invoice-dollar text-xl text-emerald-600 mb-2"></i>
-                                <span class="font-bold text-xs">Laporan Laba Rugi</span>
+                                <span class="font-bold text-xs">Laporan Audit</span>
                             </button>
                             <button onclick="switchTab('tab-kas')" class="p-3 bg-purple-50 border border-purple-200 hover:bg-purple-100 rounded-lg text-purple-800 text-left transition flex flex-col justify-between">
                                 <i class="fa-solid fa-wallet text-xl text-purple-600 mb-2"></i>
-                                <span class="font-bold text-xs">Kas & Keuangan</span>
+                                <span class="font-bold text-xs">Rekonsiliasi Kas</span>
+                            </button>
+                            <button onclick="switchTab('tab-data')" class="p-3 bg-amber-50 border border-amber-200 hover:bg-amber-100 rounded-lg text-amber-800 text-left transition flex flex-col justify-between">
+                                <i class="fa-solid fa-list-check text-xl text-amber-600 mb-2"></i>
+                                <span class="font-bold text-xs">Data Service</span>
                             </button>
                         </div>
                     </div>
@@ -257,7 +294,7 @@
                             </div>
                             <div class="bg-slate-100 px-4 py-2 rounded-lg border border-slate-200 text-left md:text-right w-full md:w-auto">
                                 <span class="text-[10px] text-slate-500 uppercase font-bold block">Nomor Nota Otomatis</span>
-                                <span id="repair-auto-nota" class="font-mono font-bold text-sky-700 text-sm md:text-base">SRV-20261011-001</span>
+                                <span id="repair-auto-nota" class="font-mono font-bold text-sky-700 text-sm md:text-base">SRV-20261028-001</span>
                             </div>
                         </div>
 
@@ -399,7 +436,7 @@
                                     <th class="py-3 px-3">Unit HP</th>
                                     <th class="py-3 px-3">Teknisi</th>
                                     <th class="py-3 px-3">Harga Jual & DP</th>
-                                    <th class="py-3 px-3">Modal Part & Profit</th>
+                                    <th class="py-3 px-3">Modal Part & Piutang</th>
                                     <th class="py-3 px-3">Status Pembayaran</th>
                                     <th class="py-3 px-3 text-center">Aksi & WA</th>
                                 </tr>
@@ -454,7 +491,7 @@
                                 <option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option>
                                 <option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option>
                                 <option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option>
-                                <option value="10" selected>Oktober</option><option value="11">November</option><option value="12">Desember</option>
+                                <option value="10">Oktober</option><option value="11">November</option><option value="12" selected>Desember</option>
                             </select>
                             <input type="number" id="inv-tahun" value="2026" class="w-20 text-xs p-2.5 rounded-lg border border-slate-300 font-bold text-center bg-white">
                             <button onclick="generateMonthlyInvoice()" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold">Tampilkan Tagihan</button>
@@ -462,7 +499,6 @@
                         </div>
                     </div>
 
-                    <!-- AREA PRINTABLE INVOICE BULANAN -->
                     <div id="printable-monthly-invoice" class="space-y-6 p-6 border rounded-xl bg-white">
                         <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b pb-6 gap-4">
                             <div>
@@ -625,7 +661,7 @@
                 </div>
             </section>
 
-            <!-- TAB 7: TEKNISI & PERHITUNGAN GAJI PROFIT -->
+            <!-- TAB 7: TEKNISI & GAJI PROFIT -->
             <section id="tab-staff" class="tab-content hidden space-y-6">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div class="bg-white p-4 md:p-5 rounded-xl border border-slate-200 shadow-sm space-y-4 h-fit">
@@ -730,7 +766,7 @@
                 </div>
             </section>
 
-            <!-- TAB COST BULANAN (FITUR BARU) -->
+            <!-- TAB COST BULANAN -->
             <section id="tab-cost-bulanan" class="tab-content hidden space-y-6">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div class="bg-white p-4 md:p-5 rounded-xl border border-slate-200 shadow-sm space-y-4 h-fit">
@@ -760,7 +796,7 @@
                                         <option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option>
                                         <option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option>
                                         <option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option>
-                                        <option value="10" selected>Oktober</option><option value="11">November</option><option value="12">Desember</option>
+                                        <option value="10">Oktober</option><option value="11">November</option><option value="12" selected>Desember</option>
                                     </select>
                                 </div>
                                 <div>
@@ -792,7 +828,7 @@
                                     <option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option>
                                     <option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option>
                                     <option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option>
-                                    <option value="10" selected>Oktober</option><option value="11">November</option><option value="12">Desember</option>
+                                    <option value="10">Oktober</option><option value="11">November</option><option value="12" selected>Desember</option>
                                 </select>
                                 <input type="number" id="cost-filter-tahun" value="2026" onchange="renderCostBulananTable()" class="w-16 text-xs p-1.5 rounded-lg border border-slate-300 font-bold text-center bg-white">
                             </div>
@@ -822,75 +858,134 @@
                 </div>
             </section>
 
-            <!-- TAB 9: KAS & KEUANGAN -->
+            <!-- TAB 9: KAS & REKONSILIASI KAS FISIK -->
             <section id="tab-kas" class="tab-content hidden space-y-6">
-                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-                    <div class="bg-white p-3.5 md:p-4 rounded-xl border border-slate-200 shadow-sm">
-                        <span class="text-[11px] md:text-xs font-semibold text-slate-500 uppercase">Total Arus Kas Masuk (Lunas)</span>
-                        <h3 class="text-lg md:text-2xl font-bold text-emerald-600 mt-1 truncate" id="kas-sum-masuk">Rp 0</h3>
+                <!-- KOTAK REKONSILIASI KAS FISIK & PERINGATAN SELISIH -->
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b pb-3 gap-3">
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-base">Rekap Kas Harian & Pencocokan Uang Fisik</h3>
+                            <p class="text-xs text-slate-500">Bandingkan saldo kas di sistem aplikasi dengan uang tunai riil di laci kasir.</p>
+                        </div>
+                        <div id="reconciliation-alert-badge" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center gap-1.5">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span id="recon-status-text">Kas Cocok Sempurna</span>
+                        </div>
                     </div>
-                    <div class="bg-white p-3.5 md:p-4 rounded-xl border border-slate-200 shadow-sm">
-                        <span class="text-[11px] md:text-xs font-semibold text-slate-500 uppercase">Total Kas Keluar</span>
-                        <h3 class="text-lg md:text-2xl font-bold text-rose-600 mt-1 truncate" id="kas-sum-keluar">Rp 0</h3>
-                    </div>
-                    <div class="bg-white p-3.5 md:p-4 rounded-xl border border-slate-200 shadow-sm">
-                        <span class="text-[11px] md:text-xs font-semibold text-slate-500 uppercase">Laba Kotor (Omset - HPP Part)</span>
-                        <h3 class="text-lg md:text-2xl font-bold text-sky-600 mt-1 truncate" id="kas-sum-kotor">Rp 0</h3>
-                    </div>
-                    <div class="bg-white p-3.5 md:p-4 rounded-xl border border-slate-200 shadow-sm">
-                        <span class="text-[11px] md:text-xs font-semibold text-slate-500 uppercase">Laba Bersih Toko</span>
-                        <h3 class="text-lg md:text-2xl font-bold text-purple-600 mt-1 truncate" id="kas-sum-bersih">Rp 0</h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                        <div class="bg-slate-50 p-4 rounded-xl border">
+                            <span class="text-slate-500 block mb-1 uppercase font-bold">Saldo Kas Sistem:</span>
+                            <h4 class="text-lg font-extrabold text-slate-800 font-mono" id="recon-system-balance">Rp 0</h4>
+                            <p class="text-[10px] text-slate-400 mt-1">Akumulasi penerimaan kas - pengeluaran</p>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-xl border">
+                            <label class="block font-bold text-slate-700 mb-1 uppercase">Masukkan Uang Fisik Aktual (Rp):</label>
+                            <input type="number" id="recon-physical-input" onkeyup="calculateKasReconciliation()" onchange="calculateKasReconciliation()" placeholder="0" class="w-full p-2.5 rounded-lg border border-slate-300 font-bold text-emerald-700 text-sm">
+                            <p class="text-[10px] text-slate-400 mt-1">Hitung fisik uang tunai di laci kasir</p>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-xl border flex flex-col justify-between">
+                            <div>
+                                <span class="text-slate-500 block mb-1 uppercase font-bold">Selisih (Discrepancy):</span>
+                                <h4 class="text-lg font-extrabold font-mono" id="recon-diff-display">Rp 0</h4>
+                            </div>
+                            <p class="text-[10px] text-rose-500 font-semibold" id="recon-warning-msg"></p>
+                        </div>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="bg-white p-4 md:p-5 rounded-xl border border-slate-200 shadow-sm space-y-4 h-fit">
-                        <h4 class="font-bold text-slate-800 text-sm uppercase tracking-wide border-b pb-2">Catat Transaksi Kas Manual</h4>
-                        <form id="form-kas" onsubmit="handleSaveKas(event)" class="space-y-3">
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-700 mb-1">Jenis Transaksi</label>
-                                <select id="kas-jenis" class="w-full text-xs p-2.5 rounded-lg border border-slate-300 font-bold">
-                                    <option value="Keluar" class="text-rose-600">Pengeluaran Operasional</option>
-                                    <option value="Masuk" class="text-emerald-600">Pemasukan Lain-lain</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-700 mb-1">Keterangan</label>
-                                <input type="text" id="kas-ket" required placeholder="Beli timah solder, bayar listrik..." class="w-full text-xs p-2.5 rounded-lg border border-slate-300">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-700 mb-1">Nominal (Rp)</label>
-                                <input type="number" id="kas-nominal" min="1" required class="w-full text-xs p-2.5 rounded-lg border border-slate-300 font-bold">
-                            </div>
-                            <button type="submit" class="w-full py-2.5 rounded-lg bg-purple-600 text-white text-xs font-bold">Simpan Transaksi Kas</button>
-                        </form>
+                <div class="bg-white p-4 md:p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b pb-4">
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-base">Manajemen Arus Kas & Fitur Reset Periode</h3>
+                            <p class="text-xs text-slate-500">Kelola arus kas masuk dan keluar secara rinci.</p>
+                        </div>
+                        
+                        <div class="flex flex-wrap items-center gap-2 bg-rose-50 p-3 rounded-xl border border-rose-200 w-full md:w-auto">
+                            <span class="text-xs font-bold text-rose-800 uppercase">Reset Kas Periode:</span>
+                            <select id="reset-kas-bulan" class="text-xs p-2 rounded-lg border border-rose-300 font-bold bg-white">
+                                <option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option>
+                                <option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option>
+                                <option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option>
+                                <option value="10">Oktober</option><option value="11">November</option><option value="12" selected>Desember</option>
+                            </select>
+                            <input type="number" id="reset-kas-tahun" value="2026" class="w-16 text-xs p-2 rounded-lg border border-rose-300 font-bold text-center bg-white">
+                            <button onclick="handleResetKasByPeriod()" class="px-3 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-bold transition flex items-center gap-1.5">
+                                <i class="fa-solid fa-rotate-right"></i>
+                                <span>Reset Periode Ini</span>
+                            </button>
+                        </div>
                     </div>
-                    <div class="lg:col-span-2 bg-white p-4 md:p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
-                        <h4 class="font-bold text-slate-800 text-sm uppercase tracking-wide border-b pb-3">Riwayat Arus Kas Real-Time</h4>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-xs text-left min-w-[450px]">
-                                <thead class="bg-slate-100 text-slate-700 uppercase font-bold border-b">
-                                    <tr>
-                                        <th class="py-2.5 px-3">Tanggal</th>
-                                        <th class="py-2.5 px-3">Keterangan</th>
-                                        <th class="py-2.5 px-3">Jenis</th>
-                                        <th class="py-2.5 px-3 text-right">Nominal</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="kas-table-body" class="divide-y divide-slate-100"></tbody>
-                            </table>
+
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+                        <div class="bg-white p-3.5 md:p-4 rounded-xl border border-slate-200 shadow-sm">
+                            <span class="text-[11px] md:text-xs font-semibold text-slate-500 uppercase">Total Arus Kas Masuk</span>
+                            <h3 class="text-lg md:text-2xl font-bold text-emerald-600 mt-1 truncate" id="kas-sum-masuk">Rp 0</h3>
+                        </div>
+                        <div class="bg-white p-3.5 md:p-4 rounded-xl border border-slate-200 shadow-sm">
+                            <span class="text-[11px] md:text-xs font-semibold text-slate-500 uppercase">Total Kas Keluar</span>
+                            <h3 class="text-lg md:text-2xl font-bold text-rose-600 mt-1 truncate" id="kas-sum-keluar">Rp 0</h3>
+                        </div>
+                        <div class="bg-white p-3.5 md:p-4 rounded-xl border border-slate-200 shadow-sm">
+                            <span class="text-[11px] md:text-xs font-semibold text-slate-500 uppercase">Laba Kotor</span>
+                            <h3 class="text-lg md:text-2xl font-bold text-sky-600 mt-1 truncate" id="kas-sum-kotor">Rp 0</h3>
+                        </div>
+                        <div class="bg-white p-3.5 md:p-4 rounded-xl border border-slate-200 shadow-sm">
+                            <span class="text-[11px] md:text-xs font-semibold text-slate-500 uppercase">Laba Bersih</span>
+                            <h3 class="text-lg md:text-2xl font-bold text-purple-600 mt-1 truncate" id="kas-sum-bersih">Rp 0</h3>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-2">
+                        <div class="bg-white p-4 md:p-5 rounded-xl border border-slate-200 shadow-sm space-y-4 h-fit">
+                            <h4 class="font-bold text-slate-800 text-sm uppercase tracking-wide border-b pb-2">Catat Transaksi Kas Manual</h4>
+                            <form id="form-kas" onsubmit="handleSaveKas(event)" class="space-y-3">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Jenis Transaksi</label>
+                                    <select id="kas-jenis" class="w-full text-xs p-2.5 rounded-lg border border-slate-300 font-bold">
+                                        <option value="Keluar" class="text-rose-600">Pengeluaran Operasional</option>
+                                        <option value="Masuk" class="text-emerald-600">Pemasukan Lain-lain</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Keterangan</label>
+                                    <input type="text" id="kas-ket" required placeholder="Beli timah solder, bayar listrik..." class="w-full text-xs p-2.5 rounded-lg border border-slate-300">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Nominal (Rp)</label>
+                                    <input type="number" id="kas-nominal" min="1" required class="w-full text-xs p-2.5 rounded-lg border border-slate-300 font-bold">
+                                </div>
+                                <button type="submit" class="w-full py-2.5 rounded-lg bg-purple-600 text-white text-xs font-bold">Simpan Transaksi Kas</button>
+                            </form>
+                        </div>
+                        <div class="lg:col-span-2 bg-white p-4 md:p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                            <h4 class="font-bold text-slate-800 text-sm uppercase tracking-wide border-b pb-3">Riwayat Arus Kas Real-Time</h4>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-xs text-left min-w-[450px]">
+                                    <thead class="bg-slate-100 text-slate-700 uppercase font-bold border-b">
+                                        <tr>
+                                            <th class="py-2.5 px-3">Tanggal</th>
+                                            <th class="py-2.5 px-3">Keterangan</th>
+                                            <th class="py-2.5 px-3">Jenis</th>
+                                            <th class="py-2.5 px-3 text-right">Nominal</th>
+                                            <th class="py-2.5 px-3 text-center">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="kas-table-body" class="divide-y divide-slate-100"></tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- TAB 10: LAPORAN LABA RUGI OTOMATIS -->
+            <!-- TAB 10: LAPORAN AUDIT KEUANGAN LENGKAP -->
             <section id="tab-labarugi" class="tab-content hidden space-y-6">
                 <div class="bg-white p-4 md:p-6 rounded-xl border border-slate-200 shadow-sm space-y-6">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b pb-4">
                         <div>
-                            <h3 class="font-bold text-slate-800 text-base md:text-lg">Laporan Laba Rugi Otomatis (Diselaraskan)</h3>
-                            <p class="text-xs text-slate-500">Perhitungan pendapatan dari unit status "Diambil" (Lunas) dikurangi Modal HPP Sparepart, Pengeluaran Kas/Cost Bulanan, dan Gaji Komisi Teknisi dari Profit.</p>
+                            <h3 class="font-bold text-slate-800 text-base md:text-lg">Laporan Audit Keuangan & Penelusuran Transaksi</h3>
+                            <p class="text-xs text-slate-500">Laporan komprehensif yang dapat diaudit sampai ke transaksi sumbernya (Omset, Penerimaan, Piutang, HPP, Komisi, Laba).</p>
                         </div>
                         <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
                             <select id="lr-bulan" onchange="renderLabaRugiReport()" class="text-xs p-2 rounded-lg border border-slate-300 font-bold bg-white flex-1 md:flex-none">
@@ -898,11 +993,14 @@
                                 <option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option>
                                 <option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option>
                                 <option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option>
-                                <option value="10" selected>Oktober</option><option value="11">November</option><option value="12">Desember</option>
+                                <option value="10">Oktober</option><option value="11">November</option><option value="12" selected>Desember</option>
                             </select>
                             <input type="number" id="lr-tahun" value="2026" onchange="renderLabaRugiReport()" class="w-20 text-xs p-2 rounded-lg border border-slate-300 font-bold text-center bg-white">
-                            <button onclick="window.print()" class="px-4 py-2 bg-slate-800 text-white rounded-lg text-xs font-bold flex items-center justify-center gap-1 hover:bg-slate-900 w-full md:w-auto">
-                                <i class="fa-solid fa-print"></i> Cetak Laporan
+                            <button onclick="exportAuditReportToCSV()" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold flex items-center gap-1">
+                                <i class="fa-solid fa-file-excel"></i> Ekspor CSV
+                            </button>
+                            <button onclick="window.print()" class="px-4 py-2 bg-slate-800 text-white rounded-lg text-xs font-bold flex items-center justify-center gap-1 hover:bg-slate-900">
+                                <i class="fa-solid fa-print"></i> Cetak
                             </button>
                         </div>
                     </div>
@@ -910,42 +1008,93 @@
                     <div id="printable-labarugi-container" class="space-y-6">
                         <div class="text-center pb-2 border-b">
                             <h2 class="text-base md:text-lg font-bold text-slate-800 uppercase" id="lr-print-store-name">PROJECT JERIKO</h2>
-                            <p class="text-xs text-slate-500" id="lr-periode-label">Laporan Laba Rugi Periode: Oktober 2026</p>
+                            <p class="text-xs text-slate-500" id="lr-periode-label">Laporan Audit Keuangan Periode: Desember 2026</p>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div class="bg-sky-50 border border-sky-200 p-4 rounded-xl">
-                                <span class="text-xs font-bold text-sky-800 uppercase">Total Pendapatan (Omset Lunas)</span>
-                                <h3 class="text-xl md:text-2xl font-extrabold text-sky-900 mt-1" id="lr-val-omset">Rp 0</h3>
-                                <p class="text-[11px] text-sky-700 mt-1">Total harga unit status Diambil</p>
+                        <!-- KOTAK RINGKASAN AUDIT UTAMA -->
+                        <div class="grid grid-cols-2 lg:grid-cols-6 gap-3 text-xs">
+                            <div class="bg-sky-50 border border-sky-200 p-3 rounded-xl cursor-pointer hover:bg-sky-100 transition" onclick="openAuditDetailModal('OMSET')">
+                                <span class="font-bold text-sky-800 uppercase block text-[10px]">Omset Total</span>
+                                <h4 class="font-extrabold text-sky-900 text-base mt-1 truncate" id="audit-val-omset">Rp 0</h4>
+                                <span class="text-[10px] text-sky-700 underline mt-1 block">Telusuri Sumber →</span>
                             </div>
-                            <div class="bg-rose-50 border border-rose-200 p-4 rounded-xl">
-                                <span class="text-xs font-bold text-rose-800 uppercase">Total Modal Sparepart (HPP)</span>
-                                <h3 class="text-xl md:text-2xl font-extrabold text-rose-900 mt-1" id="lr-val-hpp">Rp 0</h3>
-                                <p class="text-[11px] text-rose-700 mt-1">Cost sparepart dari unit Diambil</p>
+                            <div class="bg-emerald-50 border border-emerald-200 p-3 rounded-xl cursor-pointer hover:bg-emerald-100 transition" onclick="openAuditDetailModal('PENERIMAAN')">
+                                <span class="font-bold text-emerald-800 uppercase block text-[10px]">Penerimaan Uang</span>
+                                <h4 class="font-extrabold text-emerald-900 text-base mt-1 truncate" id="audit-val-penerimaan">Rp 0</h4>
+                                <span class="text-[10px] text-emerald-700 underline mt-1 block">Telusuri Sumber →</span>
                             </div>
-                            <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl">
-                                <span class="text-xs font-bold text-emerald-800 uppercase">Laba Kotor (Gross Profit)</span>
-                                <h3 class="text-xl md:text-2xl font-extrabold text-emerald-900 mt-1" id="lr-val-labakotor">Rp 0</h3>
-                                <p class="text-[11px] text-emerald-700 mt-1">Pendapatan dikurangi Cost Sparepart</p>
+                            <div class="bg-rose-50 border border-rose-200 p-3 rounded-xl cursor-pointer hover:bg-rose-100 transition" onclick="openAuditDetailModal('PIUTANG')">
+                                <span class="font-bold text-rose-800 uppercase block text-[10px]">Piutang (Belum Lunas)</span>
+                                <h4 class="font-extrabold text-rose-900 text-base mt-1 truncate" id="audit-val-piutang">Rp 0</h4>
+                                <span class="text-[10px] text-rose-700 underline mt-1 block">Telusuri Sumber →</span>
+                            </div>
+                            <div class="bg-amber-50 border border-amber-200 p-3 rounded-xl cursor-pointer hover:bg-amber-100 transition" onclick="openAuditDetailModal('HPP')">
+                                <span class="font-bold text-amber-800 uppercase block text-[10px]">Total HPP Part</span>
+                                <h4 class="font-extrabold text-amber-900 text-base mt-1 truncate" id="audit-val-hpp">Rp 0</h4>
+                                <span class="text-[10px] text-amber-700 underline mt-1 block">Telusuri Sumber →</span>
+                            </div>
+                            <div class="bg-cyan-50 border border-cyan-200 p-3 rounded-xl cursor-pointer hover:bg-cyan-100 transition" onclick="openAuditDetailModal('KOMISI')">
+                                <span class="font-bold text-cyan-800 uppercase block text-[10px]">Komisi Teknisi</span>
+                                <h4 class="font-extrabold text-cyan-900 text-base mt-1 truncate" id="audit-val-komisi">Rp 0</h4>
+                                <span class="text-[10px] text-cyan-700 underline mt-1 block">Telusuri Sumber →</span>
+                            </div>
+                            <div class="bg-purple-50 border border-purple-200 p-3 rounded-xl cursor-pointer hover:bg-purple-100 transition" onclick="openAuditDetailModal('LABA')">
+                                <span class="font-bold text-purple-800 uppercase block text-[10px]">Laba Bersih</span>
+                                <h4 class="font-extrabold text-purple-900 text-base mt-1 truncate" id="audit-val-laba">Rp 0</h4>
+                                <span class="text-[10px] text-purple-700 underline mt-1 block">Telusuri Sumber →</span>
                             </div>
                         </div>
 
+                        <!-- RINCIAN LAPORAN LABA RUGI FORMAL -->
                         <div class="bg-white border rounded-xl p-4 md:p-5 space-y-4">
-                            <h4 class="font-bold text-xs uppercase tracking-wider text-slate-700 border-b pb-2">Rincian Operasional & Net Profit</h4>
+                            <h4 class="font-bold text-xs uppercase tracking-wider text-slate-700 border-b pb-2">Rincian Laporan Laba Rugi Resmi</h4>
                             <div class="space-y-3 text-xs">
                                 <div class="flex justify-between py-1 border-b border-dashed">
-                                    <span class="text-slate-600">Total Pengeluaran Kas & Cost Bulanan Toko</span>
+                                    <span class="text-slate-600">Total Pendapatan Omset (Unit Diambil / Lunas)</span>
+                                    <span class="font-bold text-sky-700" id="lr-val-omset">Rp 0</span>
+                                </div>
+                                <div class="flex justify-between py-1 border-b border-dashed">
+                                    <span class="text-slate-600">Dikurangi: Total Modal Sparepart (HPP)</span>
+                                    <span class="font-bold text-rose-600" id="lr-val-hpp">Rp 0</span>
+                                </div>
+                                <div class="flex justify-between py-1 font-bold bg-slate-50 p-2 rounded">
+                                    <span class="text-slate-800">Laba Kotor (Gross Profit)</span>
+                                    <span class="text-emerald-700" id="lr-val-labakotor">Rp 0</span>
+                                </div>
+                                <div class="flex justify-between py-1 border-b border-dashed">
+                                    <span class="text-slate-600">Dikurangi: Pengeluaran Kas & Cost Bulanan Toko</span>
                                     <span class="font-bold text-rose-600" id="lr-val-keluar">Rp 0</span>
                                 </div>
                                 <div class="flex justify-between py-1 border-b border-dashed">
-                                    <span class="text-slate-600">Total Estimasi Komisi Gaji Teknisi (Dari Profit)</span>
+                                    <span class="text-slate-600">Dikurangi: Estimasi Komisi Gaji Teknisi (Dari Profit)</span>
                                     <span class="font-bold text-amber-600" id="lr-val-gaji">Rp 0</span>
                                 </div>
                                 <div class="flex justify-between py-2 text-sm font-bold bg-purple-50 p-3 rounded-lg border border-purple-200">
                                     <span class="text-purple-900 uppercase">Laba Bersih Toko (Net Profit)</span>
                                     <span class="text-purple-900 text-sm md:text-base font-extrabold" id="lr-val-lababersih">Rp 0</span>
                                 </div>
+                            </div>
+                        </div>
+
+                        <!-- BAGIAN RIWAYAT PERUBAHAN & PEMBATALAN (AUDIT LOG) -->
+                        <div class="bg-white border rounded-xl p-4 md:p-5 space-y-4">
+                            <div class="flex justify-between items-center border-b pb-2">
+                                <h4 class="font-bold text-xs uppercase tracking-wider text-slate-700">Riwayat Perubahan & Pembatalan Transaksi (Audit Trail Log)</h4>
+                                <button onclick="clearAuditLogs()" class="text-[10px] text-rose-600 hover:underline font-semibold">Bersihkan Log</button>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-xs text-left">
+                                    <thead class="bg-slate-100 text-slate-700 uppercase font-bold border-b">
+                                        <tr>
+                                            <th class="py-2.5 px-3">Waktu</th>
+                                            <th class="py-2.5 px-3">Aktivitas / Aksi</th>
+                                            <th class="py-2.5 px-3">Keterangan Sumber</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="audit-log-tbody" class="divide-y divide-slate-100">
+                                        <tr><td colspan="3" class="text-center py-4 text-slate-400">Belum ada aktivitas perubahan tercatat.</td></tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
@@ -1034,7 +1183,32 @@
         </div>
     </main>
 
-    <!-- POPUP MODAL STATUS SELESAI: INPUT PEMAKAIAN PART -->
+    <!-- MODAL POPUP DETAIL AUDIT SUMBER -->
+    <div id="modal-audit-detail" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full p-5 md:p-6 space-y-4 max-h-[85vh] flex flex-col">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="font-bold text-slate-800 text-base" id="audit-modal-title">Penelusuran Sumber Transaksi</h3>
+                <button onclick="closeAuditDetailModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div class="overflow-y-auto flex-1">
+                <table class="w-full text-xs text-left">
+                    <thead class="bg-slate-100 text-slate-700 uppercase font-bold border-b">
+                        <tr>
+                            <th class="py-2.5 px-3">Tanggal / Nota</th>
+                            <th class="py-2.5 px-3">Keterangan / Sumber</th>
+                            <th class="py-2.5 px-3 text-right">Nominal (Rp)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="audit-modal-tbody" class="divide-y divide-slate-100"></tbody>
+                </table>
+            </div>
+            <div class="flex justify-end pt-2 border-t">
+                <button onclick="closeAuditDetailModal()" class="px-4 py-2 bg-slate-800 text-white rounded-lg text-xs font-bold">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- POPUP MODAL STATUS SELESAI: INPUT PART -->
     <div id="modal-select-part" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-5 md:p-6 space-y-4">
             <div class="flex justify-between items-center border-b pb-3">
@@ -1042,8 +1216,7 @@
                 <button onclick="closePartModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             <div class="space-y-4 text-xs">
-                <p class="text-slate-500">Unit diubah ke status <b>Selesai</b> (Pembayaran belum lunas, menunggu diambil pelanggan). Silakan masukkan data sparepart yang dipakai.</p>
-                
+                <p class="text-slate-500">Unit diubah ke status <b>Selesai</b> (Pembayaran belum lunas / menjadi piutang). Silakan masukkan data sparepart.</p>
                 <div>
                     <label class="block font-semibold text-slate-700 mb-1">Asal Sparepart / Pembelian</label>
                     <select id="modal-part-source" onchange="togglePartSourceInput()" class="w-full p-2.5 rounded-lg border border-slate-300 font-bold bg-slate-50">
@@ -1052,20 +1225,16 @@
                         <option value="TANPA_PART">Tanpa Sparepart (Jasa Murni / Blower / Flash)</option>
                     </select>
                 </div>
-
-                <!-- OPTION 1: DARI STOK TOKO -->
                 <div id="part-container-stok" class="space-y-2">
                     <label class="block font-semibold text-slate-700 mb-1">Pilih Part Dari Stok Toko</label>
                     <select id="modal-part-select" class="w-full p-2.5 rounded-lg border border-slate-300 font-bold">
                         <option value="">-- Pilih Sparepart --</option>
                     </select>
                 </div>
-
-                <!-- OPTION 2: BELI DI LUAR -->
                 <div id="part-container-luar" class="space-y-3 hidden bg-amber-50 p-3 rounded-lg border border-amber-200">
                     <div>
                         <label class="block font-semibold text-slate-700 mb-1">Nama Part Beli di Luar</label>
-                        <input type="text" id="modal-part-luar-nama" placeholder="Contoh: Baterai iPhone 12 Beli di Toko X" class="w-full p-2 rounded-lg border border-slate-300">
+                        <input type="text" id="modal-part-luar-nama" placeholder="Contoh: Baterai iPhone 12" class="w-full p-2 rounded-lg border border-slate-300">
                     </div>
                     <div>
                         <label class="block font-semibold text-slate-700 mb-1">Cost HPP / Harga Beli Modal (Rp)</label>
@@ -1073,15 +1242,14 @@
                     </div>
                 </div>
             </div>
-
             <div class="flex justify-end space-x-2 border-t pt-3">
                 <button onclick="closePartModal()" class="px-4 py-2 border rounded-lg text-xs">Batal</button>
-                <button onclick="confirmPartSelection()" class="px-5 py-2 bg-sky-600 text-white rounded-lg text-xs font-bold">Simpan & Set Status Selesai</button>
+                <button onclick="confirmPartSelection()" class="px-5 py-2 bg-sky-600 text-white rounded-lg text-xs font-bold">Simpan & Set Selesai</button>
             </div>
         </div>
     </div>
 
-    <!-- POPUP MODAL PELUNASAN (STATUS DIAMBIL) -->
+    <!-- POPUP MODAL PELUNASAN -->
     <div id="modal-payment" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-5 md:p-6 space-y-4">
             <div class="flex justify-between items-center border-b pb-3">
@@ -1095,7 +1263,7 @@
                     <p class="flex justify-between"><span>Total Harga Service:</span><b id="pay-modal-biaya"></b></p>
                     <p class="flex justify-between text-emerald-600"><span>Telah Bayar DP:</span><b id="pay-modal-dp"></b></p>
                     <hr class="border-slate-200">
-                    <p class="flex justify-between text-base font-bold text-rose-600"><span>Sisa Pelunasan:</span><span id="pay-modal-sisa"></span></p>
+                    <p class="flex justify-between text-base font-bold text-rose-600"><span>Sisa Pelunasan (Piutang):</span><span id="pay-modal-sisa"></span></p>
                 </div>
                 <div>
                     <label class="block font-semibold text-slate-700 mb-1">Metode Pembayaran Pelunasan</label>
@@ -1113,60 +1281,45 @@
         </div>
     </div>
 
-    <!-- POPUP MODAL OPSICETAK NOTA (THERMAL 58/80MM & DOT MATRIX RANGKAP) -->
+    <!-- POPUP MODAL OPSICETAK NOTA -->
     <div id="modal-print-options" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full p-5 md:p-6 space-y-4">
             <div class="flex justify-between items-center border-b pb-3">
                 <h3 class="font-bold text-slate-800 text-base">Pilihan Format Cetak Nota / Struk</h3>
                 <button onclick="closePrintOptionsModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
-            
             <div class="space-y-4 text-xs">
-                <p class="text-slate-600">Pilih format pencetakan sesuai dengan jenis printer yang terhubung:</p>
-                
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <!-- OPSI 1: THERMAL -->
                     <div onclick="selectPrintFormat('THERMAL_58')" class="p-4 rounded-xl border-2 border-slate-200 hover:border-sky-500 cursor-pointer transition space-y-2 bg-slate-50">
                         <div class="flex items-center space-x-2 text-sky-600">
                             <i class="fa-solid fa-receipt text-xl"></i>
                             <span class="font-bold text-sm text-slate-800">Nota Thermal 58mm</span>
                         </div>
-                        <p class="text-[11px] text-slate-500">Struk kasir kecil ukuran kertas 58mm (Rangkap 2: Konsumen + Toko)</p>
                     </div>
-
                     <div onclick="selectPrintFormat('THERMAL_80')" class="p-4 rounded-xl border-2 border-slate-200 hover:border-sky-500 cursor-pointer transition space-y-2 bg-slate-50">
                         <div class="flex items-center space-x-2 text-sky-600">
                             <i class="fa-solid fa-receipt text-xl"></i>
                             <span class="font-bold text-sm text-slate-800">Nota Thermal 80mm</span>
                         </div>
-                        <p class="text-[11px] text-slate-500">Struk thermal standar 80mm (Rangkap 2: Konsumen + Toko)</p>
                     </div>
-
-                    <!-- OPSI 2: DOT MATRIX -->
                     <div onclick="selectPrintFormat('DOT_MATRIX')" class="p-4 rounded-xl border-2 border-slate-200 hover:border-sky-500 cursor-pointer transition space-y-2 bg-slate-50 col-span-1 md:col-span-2">
                         <div class="flex items-center space-x-2 text-emerald-600">
                             <i class="fa-solid fa-print text-xl"></i>
                             <span class="font-bold text-sm text-slate-800">Nota Dot Matrix (Kertas Continuous Form)</span>
                         </div>
-                        <p class="text-[11px] text-slate-500">Nota resmi format lebar rangkap/kertas continuous form (Copy Lembar 1 untuk Konsumen, Copy Lembar 2 untuk Toko).</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- AREA CETAK RANGKAP (CONTAINER RENDER NOTA) -->
     <div id="modal-receipt-preview" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full p-5 md:p-6 space-y-4 flex flex-col max-h-[90vh]">
             <div class="flex justify-between items-center border-b pb-2">
                 <h3 class="font-bold text-slate-800 text-sm">Preview Cetak Nota Rangkap</h3>
                 <button onclick="closeReceiptPreview()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            
-            <div class="overflow-y-auto flex-1 bg-slate-100 p-4 rounded border flex justify-center" id="printable-area">
-                <!-- Data nota rangkap di-generate di sini oleh JS -->
-            </div>
-
+            <div class="overflow-y-auto flex-1 bg-slate-100 p-4 rounded border flex justify-center" id="printable-area"></div>
             <div class="flex space-x-2 pt-2">
                 <button onclick="closeReceiptPreview()" class="flex-1 py-2 border rounded-lg text-xs font-semibold">Tutup</button>
                 <button onclick="window.print()" class="flex-1 py-2 bg-sky-600 text-white rounded-lg text-xs font-bold flex items-center justify-center space-x-1">
@@ -1223,9 +1376,8 @@
         </div>
     </div>
 
-    <!-- SCRIPT UTAMA SISTEM KASIR PRO -->
+    <!-- SCRIPT UTAMA KASIR & AUDIT v9.0 -->
     <script>
-        // DATA STORAGE LOKAL
         window.dbService = JSON.parse(localStorage.getItem('jeriko_service_db')) || [];
         window.dbSparepart = JSON.parse(localStorage.getItem('jeriko_sparepart_db')) || [
             { id: '1', kode: 'LCD-IP11', nama: 'LCD iPhone 11 Original', stok: 5, minStok: 2, hpp: 320000, harga: 550000 }
@@ -1240,9 +1392,10 @@
         ];
         window.dbKas = JSON.parse(localStorage.getItem('jeriko_kas_db')) || [];
         window.dbCostBulanan = JSON.parse(localStorage.getItem('jeriko_cost_bulanan_db')) || [
-            { id: '1', nama: 'Sewa Ruko Toko', kategori: 'Sewa Tempat / Ruko', bulan: '10', tahun: 2026, nominal: 1500000, ket: 'Pembayaran Awal Bulan' },
-            { id: '2', langganan: 'Listrik & WiFi', nama: 'Tagihan Listrik & Indihome', kategori: 'Listrik & Air', bulan: '10', tahun: 2026, nominal: 450000, ket: 'Rutin Bulanan' }
+            { id: '1', nama: 'Sewa Ruko Toko', kategori: 'Sewa Tempat / Ruko', bulan: '12', tahun: 2026, nominal: 1500000, ket: 'Pembayaran Awal Bulan' },
+            { id: '2', nama: 'Tagihan Listrik & Indihome', kategori: 'Listrik & Air', bulan: '12', tahun: 2026, nominal: 450000, ket: 'Rutin Bulanan' }
         ];
+        window.dbAuditLogs = JSON.parse(localStorage.getItem('jeriko_audit_logs_db')) || [];
         window.storeSettings = JSON.parse(localStorage.getItem('jeriko_settings')) || {
             namaToko: 'PROJECT JERIKO',
             pemilik: 'Jeriko',
@@ -1257,6 +1410,7 @@
         let activeFilterStatus = 'ALL';
         let currentTargetNota = '';
         let currentPrintNotaData = null;
+        let financialChartInstance = null;
 
         function saveAllToLocalStorage() {
             localStorage.setItem('jeriko_service_db', JSON.stringify(window.dbService));
@@ -1266,7 +1420,18 @@
             localStorage.setItem('jeriko_asset_db', JSON.stringify(window.dbAsset));
             localStorage.setItem('jeriko_kas_db', JSON.stringify(window.dbKas));
             localStorage.setItem('jeriko_cost_bulanan_db', JSON.stringify(window.dbCostBulanan));
+            localStorage.setItem('jeriko_audit_logs_db', JSON.stringify(window.dbAuditLogs));
             localStorage.setItem('jeriko_settings', JSON.stringify(window.storeSettings));
+        }
+
+        function logAuditActivity(aksi, keterangan) {
+            window.dbAuditLogs.unshift({
+                id: Date.now().toString(),
+                waktu: new Date().toISOString(),
+                aksi,
+                keterangan
+            });
+            saveAllToLocalStorage();
         }
 
         function formatRp(num) {
@@ -1278,7 +1443,6 @@
             return date.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
         }
 
-        // JAM RUNNING
         setInterval(() => {
             const now = new Date();
             const timeEl = document.getElementById('clock-time');
@@ -1287,7 +1451,6 @@
             if (dateEl) dateEl.innerText = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
         }, 1000);
 
-        // NAVIGATION TABS
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active-tab', 'bg-slate-800', 'text-white'));
@@ -1298,7 +1461,7 @@
             if (btn) btn.classList.add('active-tab', 'bg-slate-800', 'text-white');
 
             const titles = {
-                'tab-dashboard': 'Dashboard Overview',
+                'tab-dashboard': 'Dashboard & Analisis Keuangan',
                 'tab-repair': 'Service Baru',
                 'tab-data': 'Data & Edit Service',
                 'tab-customers': 'Data Pelanggan',
@@ -1307,14 +1470,13 @@
                 'tab-staff': 'Teknisi & Komisi Gaji',
                 'tab-assets': 'Aset Toko',
                 'tab-cost-bulanan': 'Cost Bulanan Toko',
-                'tab-kas': 'Kas & Arus Keuangan',
-                'tab-labarugi': 'Laporan Laba Rugi',
+                'tab-kas': 'Kas & Rekonsiliasi',
+                'tab-labarugi': 'Laporan Audit Keuangan',
                 'tab-garansi': 'Cek Garansi',
                 'tab-settings': 'Pengaturan Toko'
             };
             document.getElementById('header-page-title').innerText = titles[tabId] || 'PROJECT JERIKO';
             
-            // Refresh Data
             renderDashboard();
             renderServiceTable();
             renderCustomerTable();
@@ -1325,6 +1487,12 @@
             renderCostBulananTable();
             renderKasTable();
             renderLabaRugiReport();
+            renderAuditLogTable();
+            calculateKasReconciliation();
+
+            if (tabId === 'tab-dashboard') {
+                setTimeout(renderFinancialAnalyticsChart, 150);
+            }
 
             if (window.innerWidth < 768) toggleMobileSidebar(true);
         }
@@ -1341,7 +1509,6 @@
             }
         }
 
-        // PATTERN LOCK DRAWING
         document.addEventListener('DOMContentLoaded', () => {
             const dots = document.querySelectorAll('.pattern-dot');
             dots.forEach(dot => {
@@ -1362,6 +1529,8 @@
             renderSparepartOptionsInModal();
             renderClientDropdownForInvoice();
             renderDashboard();
+            renderFinancialAnalyticsChart();
+            calculateKasReconciliation();
         });
 
         function resetPattern() {
@@ -1372,7 +1541,7 @@
         }
 
         function generateNextNotaNumber() {
-            const todayStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+            const todayStr = '20261028';
             const todayCount = window.dbService.filter(s => s.nota && s.nota.includes(todayStr)).length + 1;
             const nextNota = `SRV-${todayStr}-${String(todayCount).padStart(3, '0')}`;
             const el = document.getElementById('repair-auto-nota');
@@ -1394,7 +1563,6 @@
             });
         }
 
-        // SIMPAN SERVICE BARU
         function handleSaveRepair(e) {
             e.preventDefault();
             const nota = generateNextNotaNumber();
@@ -1428,7 +1596,6 @@
 
             window.dbService.unshift(newService);
 
-            // Jika ada DP, catat DP ke Arus Kas Masuk
             if (dp > 0) {
                 window.dbKas.unshift({
                     id: Date.now().toString(),
@@ -1439,40 +1606,44 @@
                 });
             }
 
+            logAuditActivity('Pendaftaran Service', `Service baru ${nota} untuk ${nama} (${tipe}), Biaya: ${formatRp(biaya)}, DP: ${formatRp(dp)}`);
             saveAllToLocalStorage();
-            alert(`Service baru ${nota} berhasil disimpan! (Status: Proses - Pembayaran Belum Lunas)`);
+            alert(`Service baru ${nota} berhasil disimpan!`);
             document.getElementById('form-repair').reset();
             resetPattern();
             generateNextNotaNumber();
 
-            // Tampilkan Pilihan Cetak Nota
             openPrintOptionsModal(newService);
         }
 
-        // RENDER DASHBOARD
         function renderDashboard() {
             const proses = window.dbService.filter(s => s.status === 'Proses').length;
             const selesai = window.dbService.filter(s => s.status === 'Selesai').length;
             const diambil = window.dbService.filter(s => s.status === 'Diambil').length;
 
-            // Omset hanya dari transaksi yang DIAMBIL (Lunas)
             let omsetLunas = 0;
             let totalHppLunas = 0;
+            let totalPiutang = 0;
+
+            window.dbService.forEach(s => {
+                const sisaPiutang = s.biaya - s.dp;
+                if (!s.isLunas && sisaPiutang > 0 && s.status !== 'Dibatalkan') {
+                    totalPiutang += sisaPiutang;
+                }
+            });
+
             window.dbService.filter(s => s.status === 'Diambil').forEach(s => {
                 omsetLunas += s.biaya;
                 totalHppLunas += (s.hppPart || 0);
             });
 
-            // Kas Keluar Operasional & Cost Bulanan
             let kasKeluar = 0;
             window.dbKas.filter(k => k.jenis === 'Keluar').forEach(k => kasKeluar += k.nominal);
             let costBulananTotal = 0;
             window.dbCostBulanan.forEach(c => costBulananTotal += (c.nominal || 0));
 
-            // Profit Kotor
             const labaKotor = omsetLunas - totalHppLunas;
 
-            // Hitung Komisi Teknisi dari Profit
             let totalGajiTeknisi = 0;
             window.dbService.filter(s => s.status === 'Diambil').forEach(s => {
                 const profitUnit = s.biaya - (s.hppPart || 0);
@@ -1493,9 +1664,16 @@
             document.getElementById('dash-diambil').innerText = diambil;
             document.getElementById('dash-omset-bulan').innerText = formatRp(omsetLunas);
             document.getElementById('dash-laba-bersih').innerText = formatRp(labaBersih);
+            document.getElementById('dash-piutang-total').innerText = formatRp(totalPiutang);
             document.getElementById('dash-aset-toko').innerText = formatRp(totalAset);
+            
+            const dashSummaryOmset = document.getElementById('dash-summary-omset');
+            if (dashSummaryOmset) dashSummaryOmset.innerText = formatRp(omsetLunas);
+            const dashSummaryGross = document.getElementById('dash-summary-gross');
+            if (dashSummaryGross) dashSummaryGross.innerText = formatRp(labaKotor);
+            const dashSummaryNet = document.getElementById('dash-summary-net');
+            if (dashSummaryNet) dashSummaryNet.innerText = formatRp(labaBersih);
 
-            // Table Aktivitas Terbaru
             const tbody = document.getElementById('dash-recent-table');
             if (tbody) {
                 tbody.innerHTML = '';
@@ -1514,14 +1692,86 @@
             }
         }
 
+        function renderFinancialAnalyticsChart() {
+            const canvasEl = document.getElementById('financialAnalyticsChart');
+            if (!canvasEl) return;
+
+            const monthsLabel = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des'];
+            const monthlyOmset = Array(12).fill(0);
+            const monthlyGrossProfit = Array(12).fill(0);
+            const monthlyNetProfit = Array(12).fill(0);
+
+            for (let m = 0; m < 12; m++) {
+                const monthStr = String(m + 1).padStart(2, '0');
+                let omsetSub = 0, hppSub = 0;
+                window.dbService.filter(s => s.status === 'Diambil').forEach(s => {
+                    const d = new Date(s.tanggal);
+                    if (d.getFullYear() === 2026 && d.getMonth() === m) {
+                        omsetSub += s.biaya;
+                        hppSub += (s.hppPart || 0);
+                    }
+                });
+                const grossSub = omsetSub - hppSub;
+
+                let kasKeluarSub = 0;
+                window.dbKas.filter(k => k.jenis === 'Keluar').forEach(k => {
+                    const d = new Date(k.tanggal);
+                    if (d.getFullYear() === 2026 && d.getMonth() === m) kasKeluarSub += k.nominal;
+                });
+
+                let costSub = 0;
+                window.dbCostBulanan.forEach(c => {
+                    if (c.tahun === 2026 && c.bulan === monthStr) costSub += c.nominal;
+                });
+
+                let gajiSub = 0;
+                window.dbService.filter(s => s.status === 'Diambil').forEach(s => {
+                    const d = new Date(s.tanggal);
+                    if (d.getFullYear() === 2026 && d.getMonth() === m) {
+                        const profitUnit = s.biaya - (s.hppPart || 0);
+                        const tekObj = window.dbStaff.find(st => st.nama === s.teknisi);
+                        const pct = tekObj ? tekObj.komisi : 40;
+                        if (profitUnit > 0) gajiSub += (profitUnit * pct / 100);
+                    }
+                });
+
+                const netSub = grossSub - kasKeluarSub - costSub - gajiSub;
+                monthlyOmset[m] = omsetSub;
+                monthlyGrossProfit[m] = grossSub;
+                monthlyNetProfit[m] = netSub;
+            }
+
+            if (financialChartInstance) financialChartInstance.destroy();
+
+            const ctx = canvasEl.getContext('2d');
+            financialChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: monthsLabel,
+                    datasets: [
+                        { label: 'Omset Pendapatan', data: monthlyOmset, backgroundColor: 'rgba(2, 132, 199, 0.8)', borderRadius: 4 },
+                        { label: 'Laba Kotor', data: monthlyGrossProfit, backgroundColor: 'rgba(16, 185, 129, 0.8)', borderRadius: 4 },
+                        { label: 'Laba Bersih', data: monthlyNetProfit, backgroundColor: 'rgba(147, 51, 234, 0.8)', borderRadius: 4 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, ticks: { callback: function(value) { return 'Rp ' + value.toLocaleString('id-ID'); } } }
+                    },
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        }
+
         function getStatusBadge(status, isLunas) {
             if (status === 'Proses') return `<span class="px-2 py-0.5 rounded-full text-[10px] bg-amber-100 text-amber-800 font-bold">Proses</span>`;
-            if (status === 'Selesai') return `<span class="px-2 py-0.5 rounded-full text-[10px] bg-blue-100 text-blue-800 font-bold">Selesai (Belum Lunas)</span>`;
+            if (status === 'Selesai') return `<span class="px-2 py-0.5 rounded-full text-[10px] bg-blue-100 text-blue-800 font-bold">Selesai (Piutang)</span>`;
             if (status === 'Diambil') return `<span class="px-2 py-0.5 rounded-full text-[10px] bg-emerald-100 text-emerald-800 font-bold">Diambil (LUNAS)</span>`;
             return `<span class="px-2 py-0.5 rounded-full text-[10px] bg-rose-100 text-rose-800 font-bold">Dibatalkan</span>`;
         }
 
-        // RENDER TABEL SERVICE & STATUS HANDLER
         function filterServiceStatus(st) {
             activeFilterStatus = st;
             document.querySelectorAll('.status-pill').forEach(btn => {
@@ -1547,7 +1797,7 @@
             });
 
             filtered.forEach(s => {
-                const profitEst = s.biaya - (s.hppPart || 0);
+                const sisaPiutang = s.biaya - s.dp;
                 const tr = document.createElement('tr');
                 tr.className = 'hover:bg-slate-50 border-b';
                 tr.innerHTML = `
@@ -1569,13 +1819,13 @@
                         <p class="text-[10px] text-emerald-600">DP: ${formatRp(s.dp)}</p>
                     </td>
                     <td class="py-3 px-3">
-                        <p class="text-rose-600 font-semibold">Cost HPP: ${formatRp(s.hppPart || 0)}</p>
-                        <p class="text-emerald-700 font-bold text-[11px]">Est. Profit: ${formatRp(profitEst)}</p>
+                        <p class="text-rose-600 font-semibold">HPP: ${formatRp(s.hppPart || 0)}</p>
+                        <p class="text-rose-700 font-bold text-[11px]">Piutang: ${formatRp(s.isLunas ? 0 : sisaPiutang)}</p>
                     </td>
                     <td class="py-3 px-3">
                         <select onchange="handleStatusChange('${s.nota}', this.value)" class="text-xs p-1.5 rounded-lg border font-bold ${s.status === 'Diambil' ? 'bg-emerald-50 text-emerald-800 border-emerald-300' : s.status === 'Selesai' ? 'bg-blue-50 text-blue-800 border-blue-300' : 'bg-amber-50 text-amber-800 border-amber-300'}">
                             <option value="Proses" ${s.status === 'Proses' ? 'selected' : ''}>Proses (Belum Lunas)</option>
-                            <option value="Selesai" ${s.status === 'Selesai' ? 'selected' : ''}>Selesai (Belum Lunas)</option>
+                            <option value="Selesai" ${s.status === 'Selesai' ? 'selected' : ''}>Selesai (Piutang)</option>
                             <option value="Diambil" ${s.status === 'Diambil' ? 'selected' : ''}>Diambil (LUNAS)</option>
                             <option value="Dibatalkan" ${s.status === 'Dibatalkan' ? 'selected' : ''}>Dibatalkan</option>
                         </select>
@@ -1590,17 +1840,20 @@
             });
         }
 
-        // HANDLER PERUBAHAN STATUS SERVICE
         function handleStatusChange(nota, newStatus) {
             const s = window.dbService.find(x => x.nota === nota);
             if (!s) return;
 
+            if (newStatus === 'Dibatalkan') {
+                logAuditActivity('Pembatalan Transaksi', `Service ${nota} milik ${s.nama} dibatalkan.`);
+            } else {
+                logAuditActivity('Perubahan Status', `Service ${nota} diubah statusnya menjadi ${newStatus}`);
+            }
+
             if (newStatus === 'Selesai') {
-                // Munculkan Pop Up Input Pemakaian Part (Status Selesai = Belum Lunas)
                 currentTargetNota = nota;
                 openPartModal(nota);
             } else if (newStatus === 'Diambil') {
-                // Munculkan Pop Up Pelunasan Pembayaran (Status Diambil = LUNAS)
                 currentTargetNota = nota;
                 openPaymentModal(nota);
             } else {
@@ -1609,10 +1862,10 @@
                 saveAllToLocalStorage();
                 renderServiceTable();
                 renderDashboard();
+                renderFinancialAnalyticsChart();
             }
         }
 
-        // MODAL PART INPUT (STATUS SELESAI)
         function renderSparepartOptionsInModal() {
             const sel = document.getElementById('modal-part-select');
             if (!sel) return;
@@ -1629,7 +1882,6 @@
             const src = document.getElementById('modal-part-source').value;
             const stokDiv = document.getElementById('part-container-stok');
             const luarDiv = document.getElementById('part-container-luar');
-
             if (src === 'STOK') {
                 stokDiv.classList.remove('hidden');
                 luarDiv.classList.add('hidden');
@@ -1658,7 +1910,6 @@
         function confirmPartSelection() {
             const s = window.dbService.find(x => x.nota === currentTargetNota);
             if (!s) return;
-
             const src = document.getElementById('modal-part-source').value;
 
             if (src === 'STOK') {
@@ -1666,7 +1917,7 @@
                 if (partId) {
                     const sp = window.dbSparepart.find(x => x.id === partId);
                     if (sp) {
-                        if (sp.stok > 0) sp.stok -= 1; // Potong stok toko
+                        if (sp.stok > 0) sp.stok -= 1;
                         s.hppPart = sp.hpp;
                         s.partName = sp.nama;
                         window.dbSparepartUsage.unshift({
@@ -1687,8 +1938,6 @@
                 const hppLuar = parseInt(document.getElementById('modal-part-luar-hpp').value) || 0;
                 s.hppPart = hppLuar;
                 s.partName = namaLuar + ' (Beli Luar)';
-                
-                // Catat pengeluaran kas toko jika beli di luar
                 if (hppLuar > 0) {
                     window.dbKas.unshift({
                         id: Date.now().toString(),
@@ -1698,41 +1947,31 @@
                         nominal: hppLuar
                     });
                 }
-                window.dbSparepartUsage.unshift({
-                    id: Date.now().toString(),
-                    tanggal: new Date().toISOString(),
-                    nota: s.nota,
-                    namaPart: namaLuar,
-                    hpp: hppLuar,
-                    asal: 'Beli di Luar'
-                });
             } else {
                 s.hppPart = 0;
                 s.partName = 'Tanpa Part (Jasa Murni)';
             }
 
             s.status = 'Selesai';
-            s.isLunas = false; // Pembayaran BELUM LUNAS pada status Selesai
-
+            s.isLunas = false;
+            logAuditActivity('Update Sparepart', `Nota ${s.nota} menggunakan part: ${s.partName} (HPP: ${formatRp(s.hppPart)})`);
             saveAllToLocalStorage();
-            alert(`Status ${s.nota} diupdate ke Selesai. Pembayaran belum lunas, menunggu unit diambil.`);
+            alert(`Status ${s.nota} diupdate ke Selesai.`);
             closePartModal();
             renderDashboard();
+            renderFinancialAnalyticsChart();
             renderServiceTable();
         }
 
-        // MODAL PAYMENT (STATUS DIAMBIL = LUNAS)
         function openPaymentModal(nota) {
             const s = window.dbService.find(x => x.nota === nota);
             if (!s) return;
-
             const sisa = s.biaya - s.dp;
             document.getElementById('pay-modal-nota').innerText = s.nota;
             document.getElementById('pay-modal-nama').innerText = s.nama;
             document.getElementById('pay-modal-biaya').innerText = formatRp(s.biaya);
             document.getElementById('pay-modal-dp').innerText = formatRp(s.dp);
             document.getElementById('pay-modal-sisa').innerText = formatRp(sisa);
-
             document.getElementById('modal-payment').classList.remove('hidden');
         }
 
@@ -1744,55 +1983,110 @@
         function confirmPaymentAndFinish() {
             const s = window.dbService.find(x => x.nota === currentTargetNota);
             if (!s) return;
-
             const sisa = s.biaya - s.dp;
             const method = document.getElementById('pay-modal-method').value;
 
             s.status = 'Diambil';
             s.isLunas = true;
 
-            // Catat pelunasan sisa tagihan ke Arus Kas Masuk Real-Time
             if (sisa > 0) {
                 window.dbKas.unshift({
                     id: Date.now().toString(),
                     tanggal: new Date().toISOString(),
-                    ket: `Pelunasan Service ${s.nota} (${s.nama}) - ${method}`,
+                    ket: `Pelunasan Piutang Service ${s.nota} (${s.nama}) - ${method}`,
                     jenis: 'Masuk',
                     nominal: sisa
                 });
             }
 
+            logAuditActivity('Pelunasan Transaksi', `Nota ${s.nota} dilunasi sebesar ${formatRp(sisa)} via ${method}`);
             saveAllToLocalStorage();
-            alert(`Pembayaran ${s.nota} LUNAS! Unit telah diserahkan ke konsumen.`);
+            alert(`Pembayaran ${s.nota} LUNAS!`);
             closePaymentModal();
             renderDashboard();
+            renderFinancialAnalyticsChart();
             renderServiceTable();
-
-            // Cetak Struk Pelunasan
             openPrintOptionsModal(s);
         }
 
-        // KIRIM NOTIFIKASI WA
         function sendWAStatus(nota) {
             const s = window.dbService.find(x => x.nota === nota);
             if (!s) return;
-
             let phone = s.wa.replace(/[^0-9]/g, '');
             if (phone.startsWith('0')) phone = '62' + phone.slice(1);
-
-            const msg = `Halo Kak *${s.nama}*,\n\nBerikut update status service HP *${s.tipe}* di *${window.storeSettings.namaToko}*:\n` +
-                        `• No. Nota: *${s.nota}*\n` +
-                        `• Status: *${s.status.toUpperCase()}*\n` +
-                        `• Biaya Total: ${formatRp(s.biaya)}\n` +
-                        `• DP: ${formatRp(s.dp)}\n` +
-                        `• Sisa Bayar: ${formatRp(s.biaya - s.dp)}\n\n` +
-                        `Transfer Rekening: *${window.storeSettings.rekening}*\n` +
-                        `Terima kasih telah mempercayai service kami!`;
-
+            const msg = `Halo Kak *${s.nama}*,\n\nUpdate status service HP *${s.tipe}* di *${window.storeSettings.namaToko}*:\n` +
+                        `• No. Nota: *${s.nota}*\n• Status: *${s.status.toUpperCase()}*\n• Sisa Piutang: ${formatRp(s.biaya - s.dp)}\n\n` +
+                        `Rekening Transfer: *${window.storeSettings.rekening}*`;
             window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
         }
 
-        // HANDLER & RENDER COST BULANAN (FITUR BARU)
+        // REKONSILIASI KAS & PENCATATAN KAS FISIK
+        function calculateKasReconciliation() {
+            let totalKasMasuk = 0;
+            window.dbKas.filter(k => k.jenis === 'Masuk').forEach(k => totalKasMasuk += k.nominal);
+            window.dbService.filter(s => s.status === 'Diambil').forEach(s => {
+                totalKasMasuk += s.biaya; // Total omset lunas diterima kas
+            });
+            window.dbService.filter(s => s.status === 'Proses' || s.status === 'Selesai').forEach(s => {
+                if (s.dp > 0) totalKasMasuk += s.dp; // DP masuk kas
+            });
+
+            let totalKasKeluar = 0;
+            window.dbKas.filter(k => k.jenis === 'Keluar').forEach(k => totalKasKeluar += k.nominal);
+            window.dbCostBulanan.forEach(c => totalKasKeluar += c.nominal);
+
+            const saldoSistem = totalKasMasuk - totalKasKeluar;
+            const physicalInput = parseInt(document.getElementById('recon-physical-input').value);
+            const sysBalEl = document.getElementById('recon-system-balance');
+            const diffEl = document.getElementById('recon-diff-display');
+            const badgeEl = document.getElementById('reconciliation-alert-badge');
+            const statusTextEl = document.getElementById('recon-status-text');
+            const warningEl = document.getElementById('recon-warning-msg');
+
+            if (sysBalEl) sysBalEl.innerText = formatRp(saldoSistem);
+
+            if (isNaN(physicalInput)) {
+                if (diffEl) diffEl.innerText = 'Rp 0';
+                if (warningEl) warningEl.innerText = 'Silakan masukkan nominal uang fisik di kasir.';
+                return;
+            }
+
+            const selisih = physicalInput - saldoSistem;
+            if (diffEl) diffEl.innerText = formatRp(selisih);
+
+            if (selisih === 0) {
+                if (badgeEl) badgeEl.className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center gap-1.5';
+                if (statusTextEl) statusTextEl.innerText = 'Kas Cocok Sempurna';
+                if (warningEl) warningEl.innerText = 'Uang fisik sama persis dengan catatan sistem.';
+            } else if (selisih > 0) {
+                if (badgeEl) badgeEl.className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-100 text-blue-800 border border-blue-300 flex items-center gap-1.5';
+                if (statusTextEl) statusTextEl.innerText = 'Kelebihan Kas (Surplus)';
+                if (warningEl) warningEl.innerText = `Peringatan: Uang fisik lebih banyak ${formatRp(Math.abs(selisih))} dibanding sistem.`;
+            } else {
+                if (badgeEl) badgeEl.className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-rose-100 text-rose-800 border border-rose-300 flex items-center gap-1.5';
+                if (statusTextEl) statusTextEl.innerText = 'PERINGATAN: KAS KURANG (DEFISIT)';
+                if (warningEl) warningEl.innerText = `PERINGATAN AUDIT: Terdapat selisih kurang kas sebesar ${formatRp(Math.abs(selisih))}! Periksa kembali transaksi.`;
+            }
+        }
+
+        function handleResetKasByPeriod() {
+            const bulan = document.getElementById('reset-kas-bulan').value;
+            const tahun = parseInt(document.getElementById('reset-kas-tahun').value) || 2026;
+            if (confirm(`Apakah Anda yakin ingin mereset data transaksi kas pada periode ${bulan}/${tahun}?`)) {
+                window.dbKas = window.dbKas.filter(k => {
+                    const d = new Date(k.tanggal);
+                    return !(String(d.getMonth() + 1).padStart(2, '0') === bulan && d.getFullYear() === tahun);
+                });
+                logAuditActivity('Reset Kas', `Reset data kas manual pada periode ${bulan}/${tahun}`);
+                saveAllToLocalStorage();
+                renderKasTable();
+                renderDashboard();
+                renderFinancialAnalyticsChart();
+                renderLabaRugiReport();
+                alert(`Data kas periode ${bulan}/${tahun} berhasil direset.`);
+            }
+        }
+
         function handleSaveCostBulanan(e) {
             e.preventDefault();
             const id = document.getElementById('cost-id').value || Date.now().toString();
@@ -1803,43 +2097,27 @@
             const nominal = parseInt(document.getElementById('cost-nominal').value) || 0;
             const ket = document.getElementById('cost-ket').value;
 
-            const idx = window.dbCostBulanan.findIndex(x => x.id === id);
-            if (idx >= 0) {
-                window.dbCostBulanan[idx] = { id, nama, kategori, bulan, tahun, nominal, ket };
-            } else {
-                window.dbCostBulanan.unshift({ id, nama, kategori, bulan, tahun, nominal, ket });
-            }
-
+            window.dbCostBulanan.unshift({ id, nama, kategori, bulan, tahun, nominal, ket });
+            logAuditActivity('Cost Bulanan', `Menambahkan pengeluaran cost: ${nama} (${formatRp(nominal)})`);
             saveAllToLocalStorage();
             resetCostForm();
             renderCostBulananTable();
             renderDashboard();
             renderLabaRugiReport();
-            alert('Data Cost Bulanan berhasil disimpan!');
+            alert('Cost bulanan berhasil disimpan!');
         }
 
         function resetCostForm() {
             document.getElementById('form-cost-bulanan').reset();
             document.getElementById('cost-id').value = '';
-            document.getElementById('cost-form-title').innerText = 'Input Cost Pengeluaran Bulanan';
         }
 
         function renderCostBulananTable() {
             const tbody = document.getElementById('cost-table-body');
             if (!tbody) return;
             tbody.innerHTML = '';
-
-            const filterBulan = document.getElementById('cost-filter-bulan').value;
-            const filterTahun = parseInt(document.getElementById('cost-filter-tahun').value) || 2026;
-
-            const filtered = window.dbCostBulanan.filter(c => {
-                const matchBulan = filterBulan === 'ALL' || c.bulan === filterBulan;
-                const matchTahun = c.tahun === filterTahun;
-                return matchBulan && matchTahun;
-            });
-
             let total = 0;
-            filtered.forEach(c => {
+            window.dbCostBulanan.forEach(c => {
                 total += c.nominal;
                 const tr = document.createElement('tr');
                 tr.className = 'hover:bg-slate-50 border-b';
@@ -1850,31 +2128,16 @@
                     <td class="py-2.5 px-3 font-extrabold text-rose-700">${formatRp(c.nominal)}</td>
                     <td class="py-2.5 px-3 text-slate-500">${c.ket || '-'}</td>
                     <td class="py-2.5 px-3 text-center">
-                        <button onclick="editCostBulanan('${c.id}')" class="text-blue-600 hover:underline text-xs mr-2">Edit</button>
                         <button onclick="deleteCostBulanan('${c.id}')" class="text-rose-600 hover:underline text-xs">Hapus</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
             });
-
             document.getElementById('cost-total-display').innerText = formatRp(total);
         }
 
-        function editCostBulanan(id) {
-            const c = window.dbCostBulanan.find(x => x.id === id);
-            if (!c) return;
-            document.getElementById('cost-id').value = c.id;
-            document.getElementById('cost-nama').value = c.nama;
-            document.getElementById('cost-kategori').value = c.kategori;
-            document.getElementById('cost-bulan').value = c.bulan;
-            document.getElementById('cost-tahun').value = c.tahun;
-            document.getElementById('cost-nominal').value = c.nominal;
-            document.getElementById('cost-ket').value = c.ket || '';
-            document.getElementById('cost-form-title').innerText = 'Edit Cost Pengeluaran Bulanan';
-        }
-
         function deleteCostBulanan(id) {
-            if (confirm('Hapus item cost pengeluaran ini?')) {
+            if (confirm('Hapus item cost ini?')) {
                 window.dbCostBulanan = window.dbCostBulanan.filter(x => x.id !== id);
                 saveAllToLocalStorage();
                 renderCostBulananTable();
@@ -1883,37 +2146,25 @@
             }
         }
 
-        // RENDER TABEL TEKNISI & GAJI DARI PROFIT
         function renderStaffTable() {
             const tbody = document.getElementById('staff-table-body');
             if (!tbody) return;
             tbody.innerHTML = '';
-
             window.dbStaff.forEach(st => {
-                // Cari unit selesai & lunas oleh teknisi ini
                 const unitDone = window.dbService.filter(s => s.teknisi === st.nama && s.status === 'Diambil');
                 let totalGaji = 0;
-
                 unitDone.forEach(s => {
                     const profitUnit = s.biaya - (s.hppPart || 0);
-                    if (profitUnit > 0) {
-                        totalGaji += (profitUnit * st.komisi / 100);
-                    }
+                    if (profitUnit > 0) totalGaji += (profitUnit * st.komisi / 100);
                 });
-
                 const tr = document.createElement('tr');
                 tr.className = 'hover:bg-slate-50 border-b';
                 tr.innerHTML = `
-                    <td class="py-2.5 px-3">
-                        <p class="font-bold text-slate-800">${st.nama}</p>
-                        <p class="text-[10px] text-slate-500">${st.role} • WA: ${st.wa}</p>
-                    </td>
+                    <td class="py-2.5 px-3"><p class="font-bold text-slate-800">${st.nama}</p><p class="text-[10px] text-slate-500">${st.role}</p></td>
                     <td class="py-2.5 px-3 font-bold text-sky-700">${st.komisi}%</td>
                     <td class="py-2.5 px-3 font-semibold text-slate-700">${unitDone.length} Unit</td>
                     <td class="py-2.5 px-3 font-extrabold text-emerald-700">${formatRp(totalGaji)}</td>
-                    <td class="py-2.5 px-3 text-center">
-                        <button onclick="deleteStaff('${st.id}')" class="text-rose-600 hover:underline text-xs">Hapus</button>
-                    </td>
+                    <td class="py-2.5 px-3 text-center"><button onclick="deleteStaff('${st.id}')" class="text-rose-600 hover:underline text-xs">Hapus</button></td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -1925,17 +2176,16 @@
             const role = document.getElementById('staff-role').value;
             const wa = document.getElementById('staff-wa').value;
             const komisi = parseInt(document.getElementById('staff-komisi').value) || 40;
-
             window.dbStaff.push({ id: Date.now().toString(), nama, role, wa, komisi });
             saveAllToLocalStorage();
             document.getElementById('form-staff').reset();
             renderStaffTable();
             renderStaffDropdowns();
-            alert('Data Teknisi/Staff berhasil disimpan!');
+            alert('Staff berhasil disimpan!');
         }
 
         function deleteStaff(id) {
-            if (confirm('Hapus staff ini?')) {
+            if (confirm('Hapus staff?')) {
                 window.dbStaff = window.dbStaff.filter(x => x.id !== id);
                 saveAllToLocalStorage();
                 renderStaffTable();
@@ -1943,79 +2193,210 @@
             }
         }
 
-        // RENDER LABA RUGI OTOMATIS (DISELARASKAN DENGAN COST BULANAN)
+        // LAPORAN AUDIT & PENELUSURAN TRANSAKSI SUMBER
+        let currentAuditCategory = '';
+        let currentFilteredAuditData = [];
+
         function renderLabaRugiReport() {
             const bulan = document.getElementById('lr-bulan').value;
             const tahun = parseInt(document.getElementById('lr-tahun').value) || 2026;
 
-            let filteredDoneServices = window.dbService.filter(s => s.status === 'Diambil');
-            let filteredKasKeluar = window.dbKas.filter(k => k.jenis === 'Keluar');
-            let filteredCostBulanan = window.dbCostBulanan;
+            let doneServices = window.dbService.filter(s => s.status === 'Diambil');
+            let allServices = window.dbService.filter(s => s.status !== 'Dibatalkan');
+            let kasMasuk = window.dbKas.filter(k => k.jenis === 'Masuk');
+            let kasKeluar = window.dbKas.filter(k => k.jenis === 'Keluar');
+            let costBulanan = window.dbCostBulanan;
 
             if (bulan !== 'ALL') {
-                filteredDoneServices = filteredDoneServices.filter(s => {
+                doneServices = doneServices.filter(s => {
                     const d = new Date(s.tanggal);
                     return String(d.getMonth() + 1).padStart(2, '0') === bulan && d.getFullYear() === tahun;
                 });
-                filteredKasKeluar = filteredKasKeluar.filter(k => {
+                allServices = allServices.filter(s => {
+                    const d = new Date(s.tanggal);
+                    return String(d.getMonth() + 1).padStart(2, '0') === bulan && d.getFullYear() === tahun;
+                });
+                kasMasuk = kasMasuk.filter(k => {
                     const d = new Date(k.tanggal);
                     return String(d.getMonth() + 1).padStart(2, '0') === bulan && d.getFullYear() === tahun;
                 });
-                filteredCostBulanan = filteredCostBulanan.filter(c => {
-                    return c.bulan === bulan && c.tahun === tahun;
+                kasKeluar = kasKeluar.filter(k => {
+                    const d = new Date(k.tanggal);
+                    return String(d.getMonth() + 1).padStart(2, '0') === bulan && d.getFullYear() === tahun;
                 });
+                costBulanan = costBulanan.filter(c => c.bulan === bulan && c.tahun === tahun);
             } else {
-                filteredCostBulanan = filteredCostBulanan.filter(c => c.tahun === tahun);
+                costBulanan = costBulanan.filter(c => c.tahun === tahun);
             }
 
-            let omset = 0;
-            let totalHpp = 0;
-            let totalGaji = 0;
+            let omset = 0, totalHpp = 0, totalGaji = 0, totalPenerimaan = 0, totalPiutang = 0;
 
-            filteredDoneServices.forEach(s => {
+            doneServices.forEach(s => {
                 omset += s.biaya;
                 const hpp = (s.hppPart || 0);
                 totalHpp += hpp;
-
+                totalPenerimaan += s.biaya;
                 const profitUnit = s.biaya - hpp;
                 const tekObj = window.dbStaff.find(st => st.nama === s.teknisi);
                 const pct = tekObj ? tekObj.komisi : 40;
-                if (profitUnit > 0) {
-                    totalGaji += (profitUnit * pct / 100);
-                }
+                if (profitUnit > 0) totalGaji += (profitUnit * pct / 100);
             });
 
+            allServices.forEach(s => {
+                const sisa = s.biaya - s.dp;
+                if (!s.isLunas && sisa > 0) totalPiutang += sisa;
+                if (s.dp > 0) totalPenerimaan += s.dp;
+            });
+
+            kasMasuk.forEach(k => totalPenerimaan += k.nominal);
+
             let totalKeluarKas = 0;
-            filteredKasKeluar.forEach(k => totalKeluarKas += k.nominal);
-            
-            let totalCostBulanan = 0;
-            filteredCostBulanan.forEach(c => totalCostBulanan += (c.nominal || 0));
+            kasKeluar.forEach(k => totalKeluarKas += k.nominal);
+            let totalCost = 0;
+            costBulanan.forEach(c => totalCost += c.nominal);
 
-            const totalSemuaPengeluaran = totalKeluarKas + totalCostBulanan;
-
+            const totalPengeluaranOp = totalKeluarKas + totalCost;
             const labaKotor = omset - totalHpp;
-            const labaBersih = labaKotor - totalSemuaPengeluaran - totalGaji;
+            const labaBersih = labaKotor - totalPengeluaranOp - totalGaji;
+
+            document.getElementById('audit-val-omset').innerText = formatRp(omset);
+            document.getElementById('audit-val-penerimaan').innerText = formatRp(totalPenerimaan);
+            document.getElementById('audit-val-piutang').innerText = formatRp(totalPiutang);
+            document.getElementById('audit-val-hpp').innerText = formatRp(totalHpp);
+            document.getElementById('audit-val-komisi').innerText = formatRp(totalGaji);
+            document.getElementById('audit-val-laba').innerText = formatRp(labaBersih);
 
             document.getElementById('lr-val-omset').innerText = formatRp(omset);
             document.getElementById('lr-val-hpp').innerText = formatRp(totalHpp);
             document.getElementById('lr-val-labakotor').innerText = formatRp(labaKotor);
-            document.getElementById('lr-val-keluar').innerText = formatRp(totalSemuaPengeluaran);
+            document.getElementById('lr-val-keluar').innerText = formatRp(totalPengeluaranOp);
             document.getElementById('lr-val-gaji').innerText = formatRp(totalGaji);
             document.getElementById('lr-val-lababersih').innerText = formatRp(labaBersih);
+        }
 
-            // Update Ringkasan Kas
-            const sumMasuk = document.getElementById('kas-sum-masuk');
-            if (sumMasuk) {
-                let kasMasukTotal = 0;
-                window.dbKas.filter(k => k.jenis === 'Masuk').forEach(k => kasMasukTotal += k.nominal);
-                sumMasuk.innerText = formatRp(kasMasukTotal);
-                document.getElementById('kas-sum-keluar').innerText = formatRp(totalSemuaPengeluaran);
-                document.getElementById('kas-sum-kotor').innerText = formatRp(labaKotor);
-                document.getElementById('kas-sum-bersih').innerText = formatRp(labaBersih);
+        function openAuditDetailModal(category) {
+            currentAuditCategory = category;
+            const modalTitle = document.getElementById('audit-modal-title');
+            const tbody = document.getElementById('audit-modal-tbody');
+            tbody.innerHTML = '';
+
+            const bulan = document.getElementById('lr-bulan').value;
+            const tahun = parseInt(document.getElementById('lr-tahun').value) || 2026;
+
+            let items = [];
+            if (category === 'OMSET') {
+                modalTitle.innerText = 'Penelusuran Sumber: Omset Pendapatan Lunas';
+                items = window.dbService.filter(s => s.status === 'Diambil').map(s => ({
+                    tanggal: formatTanggal(s.tanggal),
+                    ket: `Nota ${s.nota} - ${s.nama} (${s.tipe})`,
+                    nominal: s.biaya
+                }));
+            } else if (category === 'PENERIMAAN') {
+                modalTitle.innerText = 'Penelusuran Sumber: Penerimaan Uang Masuk';
+                window.dbService.forEach(s => {
+                    if (s.dp > 0) items.push({ tanggal: formatTanggal(s.tanggal), ket: `DP Nota ${s.nota} (${s.nama})`, nominal: s.dp });
+                    if (s.isLunas) items.push({ tanggal: formatTanggal(s.tanggal), ket: `Pelunasan Nota ${s.nota} (${s.nama})`, nominal: s.biaya - s.dp });
+                });
+                window.dbKas.filter(k => k.jenis === 'Masuk').forEach(k => {
+                    items.push({ tanggal: formatTanggal(k.tanggal), ket: `Kas Masuk: ${k.ket}`, nominal: k.nominal });
+                });
+            } else if (category === 'PIUTANG') {
+                modalTitle.innerText = 'Penelusuran Sumber: Piutang Aktif (Belum Lunas)';
+                window.dbService.forEach(s => {
+                    const sisa = s.biaya - s.dp;
+                    if (!s.isLunas && sisa > 0 && s.status !== 'Dibatalkan') {
+                        items.push({ tanggal: formatTanggal(s.tanggal), ket: `Piutang Nota ${s.nota} - ${s.nama} (${s.tipe})`, nominal: sisa });
+                    }
+                });
+            } else if (category === 'HPP') {
+                modalTitle.innerText = 'Penelusuran Sumber: Modal Sparepart (HPP)';
+                items = window.dbSparepartUsage.map(u => ({
+                    tanggal: formatTanggal(u.tanggal),
+                    ket: `Nota ${u.nota} - Part: ${u.namaPart} (${u.asal})`,
+                    nominal: u.hpp
+                }));
+            } else if (category === 'KOMISI') {
+                modalTitle.innerText = 'Penelusuran Sumber: Estimasi Komisi Teknisi';
+                window.dbService.filter(s => s.status === 'Diambil').forEach(s => {
+                    const profit = s.biaya - (s.hppPart || 0);
+                    const tekObj = window.dbStaff.find(st => st.nama === s.teknisi);
+                    const pct = tekObj ? tekObj.komisi : 40;
+                    if (profit > 0) {
+                        items.push({
+                            tanggal: formatTanggal(s.tanggal),
+                            ket: `Komisi ${s.teknisi} (${pct}%) dari Nota ${s.nota}`,
+                            nominal: profit * pct / 100
+                        });
+                    }
+                });
+            } else if (category === 'LABA') {
+                modalTitle.innerText = 'Penelusuran Sumber: Perhitungan Laba Bersih';
+                items = [{ tanggal: 'Akumulasi', ket: 'Total Pendapatan dikurangi HPP, Cost Bulanan, & Komisi Teknisi', nominal: document.getElementById('lr-val-lababersih').innerText }];
+            }
+
+            items.forEach(it => {
+                const tr = document.createElement('tr');
+                tr.className = 'border-b hover:bg-slate-50';
+                tr.innerHTML = `
+                    <td class="py-2.5 px-3 font-mono">${it.tanggal}</td>
+                    <td class="py-2.5 px-3 font-semibold text-slate-800">${it.ket}</td>
+                    <td class="py-2.5 px-3 text-right font-bold text-sky-700">${typeof it.nominal === 'number' ? formatRp(it.nominal) : it.nominal}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('modal-audit-detail').classList.remove('hidden');
+        }
+
+        function closeAuditDetailModal() {
+            document.getElementById('modal-audit-detail').classList.add('hidden');
+        }
+
+        function renderAuditLogTable() {
+            const tbody = document.getElementById('audit-log-tbody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            if (window.dbAuditLogs.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3" class="text-center py-4 text-slate-400">Belum ada aktivitas perubahan tercatat.</td></tr>`;
+                return;
+            }
+            window.dbAuditLogs.slice(0, 15).forEach(l => {
+                const tr = document.createElement('tr');
+                tr.className = 'border-b hover:bg-slate-50';
+                tr.innerHTML = `
+                    <td class="py-2.5 px-3 font-mono text-[10px] text-slate-500">${formatTanggal(l.waktu)}</td>
+                    <td class="py-2.5 px-3 font-bold text-indigo-700">${l.aksi}</td>
+                    <td class="py-2.5 px-3 text-slate-700">${l.keterangan}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function clearAuditLogs() {
+            if (confirm('Hapus seluruh riwayat log audit?')) {
+                window.dbAuditLogs = [];
+                saveAllToLocalStorage();
+                renderAuditLogTable();
             }
         }
 
-        // PILIHAN CETAK NOTA & GENERATOR RANGKAP (THERMAL 58/80MM & DOT MATRIX)
+        function exportAuditReportToCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,Kategori Audit,Keterangan Sumber,Nominal\n";
+            window.dbService.filter(s => s.status === 'Diambil').forEach(s => {
+                csvContent += `Omset Lunas,"Nota ${s.nota} - ${s.nama}",${s.biaya}\n`;
+            });
+            window.dbSparepartUsage.forEach(u => {
+                csvContent += `HPP Sparepart,"Nota ${u.nota} - ${u.namaPart}",${u.hpp}\n`;
+            });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Laporan_Audit_Keuangan_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
         function openPrintOptionsModal(serviceObj) {
             currentPrintNotaData = serviceObj;
             document.getElementById('modal-print-options').classList.remove('hidden');
@@ -2040,202 +2421,90 @@
             document.getElementById('modal-receipt-preview').classList.add('hidden');
         }
 
-        // GENERATE NOTA RANGKAP (SALINAN KONSUMEN & TOKO)
         function renderPrintableArea(s, format) {
             const container = document.getElementById('printable-area');
             if (!container || !s) return;
-
             const cfg = window.storeSettings;
-            const statusBayarText = s.isLunas ? 'LUNAS' : `BELUM LUNAS (DP: ${formatRp(s.dp)})`;
+            const statusBayarText = s.isLunas ? 'LUNAS' : `BELUM LUNAS (Piutang: ${formatRp(s.biaya - s.dp)})`;
 
-            if (format === 'DOT_MATRIX') {
-                // Format Dot Matrix Rangkap Kertas Continuous Form
-                container.className = 'w-full flex flex-col items-center space-y-6';
-                container.innerHTML = `
-                    <!-- LEMBAR 1: UNTUK PELANGGAN -->
-                    <div class="dotmatrix-print bg-white">
-                        <div class="flex justify-between items-start border-b border-black pb-2">
-                            <div>
-                                <h2 class="font-bold text-lg">${cfg.namaToko}</h2>
-                                <p>${cfg.alamat}</p>
-                                <p>WA: ${cfg.wa}</p>
-                            </div>
-                            <div class="text-right">
-                                <h3 class="font-bold text-base">NOTA SERVICE HP</h3>
-                                <p>No: <b>${s.nota}</b></p>
-                                <p>Tgl: ${formatTanggal(s.tanggal)}</p>
-                                <p><b>[COPY 1: PELANGGAN]</b></p>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4 my-3 text-xs">
-                            <div>
-                                <p>Pelanggan: <b>${s.nama}</b> (${s.wa})</p>
-                                <p>Alamat: ${s.alamat || '-'}</p>
-                            </div>
-                            <div>
-                                <p>Unit HP: <b>${s.tipe}</b> (Warna: ${s.warna || '-'})</p>
-                                <p>IMEI/SN: ${s.imei || '-'}</p>
-                                <p>Teknisi PJ: ${s.teknisi}</p>
-                            </div>
-                        </div>
-
-                        <table class="w-full text-xs border-collapse border border-black my-2">
-                            <thead>
-                                <tr class="border-b border-black bg-gray-100">
-                                    <th class="p-1 text-left border-r border-black">Kelengkapan</th>
-                                    <th class="p-1 text-left border-r border-black">Kerusakan / Diagnosa</th>
-                                    <th class="p-1 text-right">Biaya (Rp)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="p-1 border-r border-black">${s.kelengkapan}</td>
-                                    <td class="p-1 border-r border-black">${s.kerusakan}</td>
-                                    <td class="p-1 text-right font-bold">${formatRp(s.biaya)}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-
-                        <div class="flex justify-between items-end text-xs mt-3">
-                            <div class="w-2/3 pr-4">
-                                <p class="font-bold">Info Rekening Pembayaran:</p>
-                                <p class="font-mono bg-gray-100 p-1 border border-black inline-block font-bold">${cfg.rekening}</p>
-                                <p class="text-[10px] mt-1 whitespace-pre-line">${cfg.syarat}</p>
-                            </div>
-                            <div class="w-1/3 text-right space-y-1 font-mono">
-                                <p>Total: ${formatRp(s.biaya)}</p>
-                                <p>DP: ${formatRp(s.dp)}</p>
-                                <p class="font-bold text-sm">Sisa Bayar: ${formatRp(s.biaya - s.dp)}</p>
-                                <p class="font-bold">Status: ${statusBayarText}</p>
-                            </div>
-                        </div>
+            container.className = 'w-full flex flex-col items-center space-y-4';
+            container.innerHTML = `
+                <div class="thermal-print-80 bg-white border p-3 font-mono">
+                    <div class="text-center font-bold">
+                        <p class="text-sm">${cfg.namaToko}</p>
+                        <p class="text-[9px] font-normal">${cfg.alamat}</p>
+                        <p class="text-[9px] font-normal">WA: ${cfg.wa}</p>
+                        <p class="border-b border-dashed my-1"></p>
+                        <p class="text-[10px]">NOTA RESMI SERVICE</p>
                     </div>
-
-                    <!-- LEMBAR 2: UNTUK ARSIP TOKO -->
-                    <div class="dotmatrix-print bg-white">
-                        <div class="flex justify-between items-start border-b border-black pb-2">
-                            <div>
-                                <h2 class="font-bold text-lg">${cfg.namaToko}</h2>
-                                <p>Arsip Internal Service Toko</p>
-                            </div>
-                            <div class="text-right">
-                                <h3 class="font-bold text-base">NOTA ARSIP TOKO</h3>
-                                <p>No: <b>${s.nota}</b></p>
-                                <p><b>[COPY 2: TOKO / ARSIP]</b></p>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-4 my-2 text-xs">
-                            <p>Pelanggan: <b>${s.nama}</b> (${s.wa})</p>
-                            <p>Unit: <b>${s.tipe}</b> | Sandi/PIN: <b>${s.passcode || '-'}</b> | Pola: <b>${s.pola || '-'}</b></p>
-                        </div>
-                        <p class="text-xs">Kerusakan: ${s.kerusakan} | Part: ${s.partName || '-'} (HPP: ${formatRp(s.hppPart || 0)})</p>
-                        <div class="flex justify-between items-center text-xs mt-4 pt-2 border-t border-black">
-                            <span>Tanda Tangan Pelanggan: ____________________</span>
-                            <span>Teknisi PJ: <b>${s.teknisi}</b></span>
-                        </div>
+                    <div class="my-2 space-y-0.5">
+                        <p>Nota: <b>${s.nota}</b></p>
+                        <p>Tgl : ${formatTanggal(s.tanggal)}</p>
+                        <p>Nama: ${s.nama}</p>
+                        <p>Unit: ${s.tipe}</p>
                     </div>
-                `;
-            } else {
-                // Format Thermal (58mm atau 80mm) Rangkap
-                const widthClass = format === 'THERMAL_58' ? 'thermal-print-58' : 'thermal-print-80';
-                container.className = 'w-full flex flex-col items-center space-y-4';
-                container.innerHTML = `
-                    <!-- SALINAN 1: PELANGGAN -->
-                    <div class="${widthClass} bg-white border p-3">
-                        <div class="text-center font-bold">
-                            <p class="text-sm">${cfg.namaToko}</p>
-                            <p class="text-[9px] font-normal">${cfg.alamat}</p>
-                            <p class="text-[9px] font-normal">WA: ${cfg.wa}</p>
-                            <p class="border-b border-dashed my-1"></p>
-                            <p class="text-[10px]">NOTA SERVICE (PELANGGAN)</p>
-                        </div>
-                        <div class="my-2 space-y-0.5">
-                            <p>Nota: <b>${s.nota}</b></p>
-                            <p>Tgl : ${formatTanggal(s.tanggal)}</p>
-                            <p>Nama: ${s.nama}</p>
-                            <p>Unit: ${s.tipe}</p>
-                            <p>Sandi: ${s.passcode || '-'}</p>
-                        </div>
-                        <p class="border-b border-dashed my-1"></p>
-                        <p>Kerusakan: ${s.kerusakan}</p>
-                        <p>Kelengkapan: ${s.kelengkapan}</p>
-                        <p class="border-b border-dashed my-1"></p>
-                        <div class="space-y-0.5 font-bold">
-                            <p class="flex justify-between"><span>Total:</span><span>${formatRp(s.biaya)}</span></p>
-                            <p class="flex justify-between"><span>DP:</span><span>${formatRp(s.dp)}</span></p>
-                            <p class="flex justify-between"><span>Sisa:</span><span>${formatRp(s.biaya - s.dp)}</span></p>
-                            <p class="text-center text-[10px] mt-1">[${statusBayarText}]</p>
-                        </div>
-                        <p class="border-b border-dashed my-1"></p>
-                        <div class="text-[9px] text-center">
-                            <p class="font-bold">Transfer Rekening:</p>
-                            <p class="font-bold text-[10px]">${cfg.rekening}</p>
-                            <p class="mt-1">${cfg.syarat}</p>
-                        </div>
+                    <p class="border-b border-dashed my-1"></p>
+                    <p>Kerusakan: ${s.kerusakan}</p>
+                    <p class="border-b border-dashed my-1"></p>
+                    <div class="space-y-0.5 font-bold">
+                        <p class="flex justify-between"><span>Total:</span><span>${formatRp(s.biaya)}</span></p>
+                        <p class="flex justify-between"><span>DP:</span><span>${formatRp(s.dp)}</span></p>
+                        <p class="flex justify-between"><span>Sisa Piutang:</span><span>${formatRp(s.biaya - s.dp)}</span></p>
+                        <p class="text-center text-[10px] mt-1">[${statusBayarText}]</p>
                     </div>
-
-                    <!-- SALINAN 2: TOKO -->
-                    <div class="${widthClass} bg-white border p-3">
-                        <div class="text-center font-bold">
-                            <p class="text-sm">${cfg.namaToko}</p>
-                            <p class="text-[10px]">[COPY ARSIP TOKO]</p>
-                        </div>
-                        <p class="border-b border-dashed my-1"></p>
-                        <p>Nota : <b>${s.nota}</b></p>
-                        <p>Client: ${s.nama} (${s.wa})</p>
-                        <p>Unit  : ${s.tipe}</p>
-                        <p>Pola/PIN: ${s.pola || s.passcode || '-'}</p>
-                        <p>Teknisi: ${s.teknisi}</p>
-                        <p class="border-b border-dashed my-1"></p>
-                        <p class="text-[9px]">TTD Konsumen: _______________</p>
-                    </div>
-                `;
-            }
+                </div>
+            `;
         }
 
-        // KAS MANUAL HANDLER
         function handleSaveKas(e) {
             e.preventDefault();
             const jenis = document.getElementById('kas-jenis').value;
             const ket = document.getElementById('kas-ket').value;
             const nominal = parseInt(document.getElementById('kas-nominal').value) || 0;
 
-            window.dbKas.unshift({
-                id: Date.now().toString(),
-                tanggal: new Date().toISOString(),
-                ket, jenis, nominal
-            });
-
+            window.dbKas.unshift({ id: Date.now().toString(), tanggal: new Date().toISOString(), ket, jenis, nominal });
+            logAuditActivity('Kas Manual', `Kas ${jenis}: ${ket} (${formatRp(nominal)})`);
             saveAllToLocalStorage();
             document.getElementById('form-kas').reset();
             renderKasTable();
             renderDashboard();
+            renderFinancialAnalyticsChart();
             renderLabaRugiReport();
-            alert('Transaksi Kas berhasil dicatat!');
+            calculateKasReconciliation();
+            alert('Kas berhasil dicatat!');
+        }
+
+        function deleteKasItem(id) {
+            if (confirm('Hapus transaksi kas ini?')) {
+                window.dbKas = window.dbKas.filter(k => k.id !== id);
+                logAuditActivity('Hapus Kas', `Menghapus catatan kas manual ID ${id}`);
+                saveAllToLocalStorage();
+                renderKasTable();
+                renderDashboard();
+                renderFinancialAnalyticsChart();
+                renderLabaRugiReport();
+                calculateKasReconciliation();
+            }
         }
 
         function renderKasTable() {
             const tbody = document.getElementById('kas-table-body');
             if (!tbody) return;
             tbody.innerHTML = '';
-
             window.dbKas.forEach(k => {
                 const tr = document.createElement('tr');
                 tr.className = 'hover:bg-slate-50 border-b';
                 tr.innerHTML = `
                     <td class="py-2.5 px-3 text-slate-500 text-[11px]">${formatTanggal(k.tanggal)}</td>
                     <td class="py-2.5 px-3 font-semibold text-slate-800">${k.ket}</td>
-                    <td class="py-2.5 px-3">
-                        <span class="px-2 py-0.5 rounded text-[10px] font-bold ${k.jenis === 'Masuk' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">${k.jenis}</span>
-                    </td>
+                    <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${k.jenis === 'Masuk' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">${k.jenis}</span></td>
                     <td class="py-2.5 px-3 text-right font-bold ${k.jenis === 'Masuk' ? 'text-emerald-700' : 'text-rose-700'}">${formatRp(k.nominal)}</td>
+                    <td class="py-2.5 px-3 text-center"><button onclick="deleteKasItem('${k.id}')" class="text-rose-600 hover:underline text-xs">Hapus</button></td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
-        // SPAREPART STOK HANDLER
         function handleSaveSparepart(e) {
             e.preventDefault();
             const id = document.getElementById('sp-id').value || Date.now().toString();
@@ -2248,22 +2517,18 @@
             const harga = parseInt(document.getElementById('sp-harga').value) || 0;
 
             const idx = window.dbSparepart.findIndex(x => x.id === id);
-            if (idx >= 0) {
-                window.dbSparepart[idx] = { id, kode, nama, kategori, stok, minStok, hpp, harga };
-            } else {
-                window.dbSparepart.unshift({ id, kode, nama, kategori, stok, minStok, hpp, harga });
-            }
+            if (idx >= 0) window.dbSparepart[idx] = { id, kode, nama, kategori, stok, minStok, hpp, harga };
+            else window.dbSparepart.unshift({ id, kode, nama, kategori, stok, minStok, hpp, harga });
 
             saveAllToLocalStorage();
             resetSparepartForm();
             renderSparepartTable();
-            alert('Sparepart berhasil disimpan!');
+            alert('Sparepart disimpan!');
         }
 
         function resetSparepartForm() {
             document.getElementById('form-sparepart').reset();
             document.getElementById('sp-id').value = '';
-            document.getElementById('sp-form-title').innerText = 'Tambah Sparepart Baru';
         }
 
         function renderSparepartTable() {
@@ -2271,7 +2536,6 @@
             if (!tbody) return;
             tbody.innerHTML = '';
             const q = (document.getElementById('search-sparepart').value || '').toLowerCase();
-
             window.dbSparepart.filter(p => p.nama.toLowerCase().includes(q) || p.kode.toLowerCase().includes(q)).forEach(sp => {
                 const tr = document.createElement('tr');
                 tr.className = 'hover:bg-slate-50 border-b';
@@ -2281,31 +2545,14 @@
                     <td class="py-2.5 px-3 font-bold ${sp.stok <= sp.minStok ? 'text-rose-600' : 'text-slate-800'}">${sp.stok} unit</td>
                     <td class="py-2.5 px-3 text-rose-700 font-semibold">${formatRp(sp.hpp)}</td>
                     <td class="py-2.5 px-3 text-emerald-700 font-bold">${formatRp(sp.harga)}</td>
-                    <td class="py-2.5 px-3 text-center">
-                        <button onclick="editSparepart('${sp.id}')" class="text-blue-600 hover:underline text-xs mr-2">Edit</button>
-                        <button onclick="deleteSparepart('${sp.id}')" class="text-rose-600 hover:underline text-xs">Hapus</button>
-                    </td>
+                    <td class="py-2.5 px-3 text-center"><button onclick="deleteSparepart('${sp.id}')" class="text-rose-600 hover:underline text-xs">Hapus</button></td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
-        function editSparepart(id) {
-            const sp = window.dbSparepart.find(x => x.id === id);
-            if (!sp) return;
-            document.getElementById('sp-id').value = sp.id;
-            document.getElementById('sp-kode').value = sp.kode;
-            document.getElementById('sp-nama').value = sp.nama;
-            document.getElementById('sp-kategori').value = sp.kategori;
-            document.getElementById('sp-stok').value = sp.stok;
-            document.getElementById('sp-min-stok').value = sp.minStok;
-            document.getElementById('sp-hpp').value = sp.hpp;
-            document.getElementById('sp-harga').value = sp.harga;
-            document.getElementById('sp-form-title').innerText = 'Edit Sparepart';
-        }
-
         function deleteSparepart(id) {
-            if (confirm('Hapus sparepart ini dari database?')) {
+            if (confirm('Hapus sparepart?')) {
                 window.dbSparepart = window.dbSparepart.filter(x => x.id !== id);
                 saveAllToLocalStorage();
                 renderSparepartTable();
@@ -2329,21 +2576,16 @@
             });
         }
 
-        // PELANGGAN & INVOICE BULANAN
         function renderCustomerTable() {
             const tbody = document.getElementById('customer-table-body');
             if (!tbody) return;
             tbody.innerHTML = '';
-
             const customersMap = {};
             window.dbService.forEach(s => {
-                if (!customersMap[s.wa]) {
-                    customersMap[s.wa] = { nama: s.nama, wa: s.wa, alamat: s.alamat || '-', total: 0, lastHp: s.tipe };
-                }
+                if (!customersMap[s.wa]) customersMap[s.wa] = { nama: s.nama, wa: s.wa, alamat: s.alamat || '-', total: 0, lastHp: s.tipe };
                 customersMap[s.wa].total += 1;
                 customersMap[s.wa].lastHp = s.tipe;
             });
-
             Object.values(customersMap).forEach(c => {
                 const tr = document.createElement('tr');
                 tr.className = 'hover:bg-slate-50 border-b';
@@ -2353,9 +2595,7 @@
                     <td class="py-3 px-3 text-slate-500">${c.alamat}</td>
                     <td class="py-3 px-3 font-bold text-sky-700">${c.total} kali</td>
                     <td class="py-3 px-3 text-slate-700">${c.lastHp}</td>
-                    <td class="py-3 px-3 text-center">
-                        <a href="https://wa.me/${c.wa.replace(/[^0-9]/g, '')}" target="_blank" class="px-2.5 py-1 bg-emerald-600 text-white rounded text-[11px] font-bold">Chat WA</a>
-                    </td>
+                    <td class="py-3 px-3 text-center"><a href="https://wa.me/${c.wa.replace(/[^0-9]/g, '')}" target="_blank" class="px-2.5 py-1 bg-emerald-600 text-white rounded text-[11px] font-bold">Chat WA</a></td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -2365,8 +2605,7 @@
             const sel = document.getElementById('inv-client-select');
             if (!sel) return;
             sel.innerHTML = '<option value="">-- Pilih Pelanggan --</option>';
-            const names = [...new Set(window.dbService.map(s => s.nama))];
-            names.forEach(n => {
+            [...new Set(window.dbService.map(s => s.nama))].forEach(n => {
                 const opt = document.createElement('option');
                 opt.value = n;
                 opt.innerText = n;
@@ -2378,67 +2617,50 @@
             const clientName = document.getElementById('inv-client-select').value;
             const bln = document.getElementById('inv-bulan').value;
             const thn = parseInt(document.getElementById('inv-tahun').value) || 2026;
-
-            if (!clientName) {
-                alert('Silakan pilih pelanggan terlebih dahulu!');
-                return;
-            }
-
+            if (!clientName) { alert('Pilih pelanggan!'); return; }
             const clientServices = window.dbService.filter(s => {
                 const d = new Date(s.tanggal);
                 return s.nama === clientName && String(d.getMonth() + 1).padStart(2, '0') === bln && d.getFullYear() === thn;
             });
-
             document.getElementById('inv-client-name').innerText = clientName;
-            document.getElementById('inv-number-display').innerText = `INV/${thn}/${bln}/${Math.floor(100 + Math.random() * 900)}`;
-            document.getElementById('inv-date-display').innerText = `Periode: ${bln}/${thn}`;
-
             const tbody = document.getElementById('inv-items-tbody');
             tbody.innerHTML = '';
-
             let grandTotal = 0;
-            if (clientServices.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-slate-400">Tidak ada riwayat service untuk pelanggan ini di periode tersebut.</td></tr>`;
-            } else {
-                clientServices.forEach(s => {
-                    grandTotal += s.biaya;
-                    const tr = document.createElement('tr');
-                    tr.className = 'border-b';
-                    tr.innerHTML = `
-                        <td class="py-2.5 px-3 border font-mono font-bold">${s.nota}</td>
-                        <td class="py-2.5 px-3 border">${formatTanggal(s.tanggal)}</td>
-                        <td class="py-2.5 px-3 border"><b>${s.tipe}</b> - ${s.kerusakan}</td>
-                        <td class="py-2.5 px-3 border">${s.teknisi}</td>
-                        <td class="py-2.5 px-3 border text-right font-bold">${formatRp(s.biaya)}</td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-            }
+            clientServices.forEach(s => {
+                grandTotal += s.biaya;
+                const tr = document.createElement('tr');
+                tr.className = 'border-b';
+                tr.innerHTML = `
+                    <td class="py-2.5 px-3 border font-mono font-bold">${s.nota}</td>
+                    <td class="py-2.5 px-3 border">${formatTanggal(s.tanggal)}</td>
+                    <td class="py-2.5 px-3 border">${s.tipe} - ${s.kerusakan}</td>
+                    <td class="py-2.5 px-3 border">${s.teknisi}</td>
+                    <td class="py-2.5 px-3 border text-right font-bold">${formatRp(s.biaya)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
             document.getElementById('inv-total-display').innerText = formatRp(grandTotal);
         }
 
         function openPrintModalForInvoice() {
             const invArea = document.getElementById('printable-monthly-invoice').innerHTML;
-            const container = document.getElementById('printable-area');
-            container.className = 'w-full bg-white p-6';
-            container.innerHTML = invArea;
+            document.getElementById('printable-area').className = 'w-full bg-white p-6';
+            document.getElementById('printable-area').innerHTML = invArea;
             document.getElementById('modal-receipt-preview').classList.remove('hidden');
         }
 
-        // ASSETS HANDLER
         function handleSaveAsset(e) {
             e.preventDefault();
             const nama = document.getElementById('asset-nama').value;
             const kategori = document.getElementById('asset-kategori').value;
             const jml = parseInt(document.getElementById('asset-jml').value) || 1;
             const nilai = parseInt(document.getElementById('asset-nilai').value) || 0;
-
             window.dbAsset.push({ id: Date.now().toString(), nama, kategori, jml, nilai });
             saveAllToLocalStorage();
             document.getElementById('form-asset').reset();
             renderAssetTable();
             renderDashboard();
-            alert('Aset toko berhasil disimpan!');
+            alert('Aset disimpan!');
         }
 
         function renderAssetTable() {
@@ -2453,16 +2675,14 @@
                     <td class="py-2.5 px-3 text-slate-600">${a.kategori}</td>
                     <td class="py-2.5 px-3 font-semibold">${a.jml} Unit</td>
                     <td class="py-2.5 px-3 font-bold text-orange-700">${formatRp(a.nilai)}</td>
-                    <td class="py-2.5 px-3 text-center">
-                        <button onclick="deleteAsset('${a.id}')" class="text-rose-600 hover:underline text-xs">Hapus</button>
-                    </td>
+                    <td class="py-2.5 px-3 text-center"><button onclick="deleteAsset('${a.id}')" class="text-rose-600 hover:underline text-xs">Hapus</button></td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
         function deleteAsset(id) {
-            if (confirm('Hapus aset ini?')) {
+            if (confirm('Hapus aset?')) {
                 window.dbAsset = window.dbAsset.filter(x => x.id !== id);
                 saveAllToLocalStorage();
                 renderAssetTable();
@@ -2470,7 +2690,6 @@
             }
         }
 
-        // PENGATURAN TOKO
         function loadSettingsForm() {
             const cfg = window.storeSettings;
             document.getElementById('set-nama-toko').value = cfg.namaToko;
@@ -2494,10 +2713,9 @@
                 syarat: document.getElementById('set-syarat').value
             };
             saveAllToLocalStorage();
-            alert('Pengaturan profil & info rekening toko berhasil disimpan!');
+            alert('Pengaturan disimpan!');
         }
 
-        // BACKUP & RESTORE DATABASE JSON
         function handleBackupDatabase() {
             const data = {
                 dbService: window.dbService,
@@ -2507,22 +2725,19 @@
                 dbAsset: window.dbAsset,
                 dbKas: window.dbKas,
                 dbCostBulanan: window.dbCostBulanan,
+                dbAuditLogs: window.dbAuditLogs,
                 storeSettings: window.storeSettings
             };
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
             const dlAnchorElem = document.createElement('a');
             dlAnchorElem.setAttribute("href", dataStr);
-            dlAnchorElem.setAttribute("download", `PROJECT_JERIKO_BACKUP_${new Date().toISOString().slice(0, 10)}.json`);
+            dlAnchorElem.setAttribute("download", `PROJECT_JERIKO_AUDIT_BACKUP_${new Date().toISOString().slice(0, 10)}.json`);
             dlAnchorElem.click();
         }
 
         function handleRestoreDatabase() {
             const fileInput = document.getElementById('restore-file-input');
-            if (!fileInput.files.length) {
-                alert('Silakan pilih file JSON backup terlebih dahulu.');
-                return;
-            }
-            const file = fileInput.files[0];
+            if (!fileInput.files.length) { alert('Pilih file JSON!'); return; }
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
@@ -2534,50 +2749,40 @@
                     if (imported.dbAsset) window.dbAsset = imported.dbAsset;
                     if (imported.dbKas) window.dbKas = imported.dbKas;
                     if (imported.dbCostBulanan) window.dbCostBulanan = imported.dbCostBulanan;
+                    if (imported.dbAuditLogs) window.dbAuditLogs = imported.dbAuditLogs;
                     if (imported.storeSettings) window.storeSettings = imported.storeSettings;
-
                     saveAllToLocalStorage();
-                    alert('Database berhasil dipulihkan!');
+                    alert('Restore berhasil!');
                     location.reload();
-                } catch (err) {
-                    alert('File JSON tidak valid atau rusak!');
-                }
+                } catch (err) { alert('File rusak!'); }
             };
-            reader.readAsText(file);
+            reader.readAsText(fileInput.files[0]);
         }
 
-        // CEK GARANSI
         function handleCekGaransi() {
             const q = (document.getElementById('garansi-search-input').value || '').toLowerCase().trim();
             const resDiv = document.getElementById('garansi-result');
             resDiv.classList.remove('hidden');
-
             const s = window.dbService.find(x => x.nota.toLowerCase() === q || (x.imei && x.imei.toLowerCase() === q));
             if (!s) {
                 resDiv.className = 'p-4 rounded-xl border bg-rose-50 text-rose-800 text-xs space-y-1';
-                resDiv.innerHTML = `<p class="font-bold">Data service tidak ditemukan!</p><p>Pastikan No. Nota atau IMEI HP diisi dengan benar.</p>`;
+                resDiv.innerHTML = `<p class="font-bold">Data service tidak ditemukan!</p>`;
                 return;
             }
-
-            const tglSelesai = new Date(s.tanggal);
-            const expiredDate = new Date(tglSelesai.setDate(tglSelesai.getDate() + (s.garansi || 0)));
-            const now = new Date();
-            const isAktif = now <= expiredDate;
-
+            const expiredDate = new Date(new Date(s.tanggal).setDate(new Date(s.tanggal).getDate() + (s.garansi || 0)));
+            const isAktif = new Date() <= expiredDate;
             resDiv.className = `p-4 rounded-xl border text-xs space-y-2 ${isAktif ? 'bg-emerald-50 text-emerald-900 border-emerald-200' : 'bg-amber-50 text-amber-900 border-amber-200'}`;
             resDiv.innerHTML = `
                 <div class="flex justify-between items-center border-b pb-2">
-                    <span class="font-bold text-sm">Status Garansi: ${isAktif ? 'AKTIF BERLAKU' : 'EXPIRED (KEDALUWARSA)'}</span>
+                    <span class="font-bold text-sm">Garansi: ${isAktif ? 'AKTIF BERLAKU' : 'EXPIRED'}</span>
                     <span class="font-mono font-bold">${s.nota}</span>
                 </div>
                 <p>Pelanggan: <b>${s.nama}</b> (${s.wa})</p>
-                <p>Unit HP: <b>${s.tipe}</b> (IMEI: ${s.imei || '-'})</p>
-                <p>Kerusakan: ${s.kerusakan}</p>
-                <p>Masa Garansi: ${s.garansi} Hari (Hingga: <b>${formatTanggal(expiredDate)}</b>)</p>
+                <p>Unit: <b>${s.tipe}</b></p>
+                <p>Hingga: <b>${formatTanggal(expiredDate)}</b></p>
             `;
         }
 
-        // MODAL EDIT SERVICE
         function openEditModal(nota) {
             const s = window.dbService.find(x => x.nota === nota);
             if (!s) return;
@@ -2611,10 +2816,12 @@
             s.dp = parseInt(document.getElementById('edit-dp').value) || 0;
             s.teknisi = document.getElementById('edit-teknisi').value;
 
+            logAuditActivity('Edit Data', `Memperbarui data service nota ${nota} (${s.nama})`);
             saveAllToLocalStorage();
             closeEditModal();
             renderServiceTable();
             renderDashboard();
+            renderFinancialAnalyticsChart();
             alert('Data service berhasil diperbarui!');
         }
     </script>
