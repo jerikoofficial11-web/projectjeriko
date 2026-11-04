@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PROJECT JERIKO - Sistem Kasir & Audit Keuangan Resmi v9.0</title>
+    <title>PROJECT JERIKO - Sistem Kasir & Audit Keuangan Resmi v9.5</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- html2pdf.js CDN (Generasi PDF Nota) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <!-- Google Fonts Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
@@ -52,6 +54,9 @@
         .thermal-print-58 { width: 58mm; padding: 4px; font-family: monospace; font-size: 10px; line-height: 1.2; }
         .thermal-print-80 { width: 80mm; padding: 6px; font-family: monospace; font-size: 11px; line-height: 1.3; }
         .dotmatrix-print { width: 100%; max-width: 210mm; font-family: 'Courier New', Courier, monospace; font-size: 11px; line-height: 1.3; border: 2px solid #000; padding: 15px; margin-bottom: 20px; background: #fff; color: #000; }
+        
+        /* PDF Specific Sheet Layout */
+        .pdf-nota-container { width: 100%; max-width: 800px; padding: 24px; background: #ffffff; color: #000000; font-family: sans-serif; }
     </style>
 </head>
 <body class="h-screen flex flex-col md:flex-row overflow-hidden bg-slate-100">
@@ -304,15 +309,20 @@
                         </div>
 
                         <div class="space-y-3">
-                            <h4 class="font-bold text-xs uppercase tracking-wider text-sky-800 bg-sky-50 px-3 py-1.5 rounded inline-block">1. Data Pemilik Unit</h4>
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div>
+                            <div class="flex justify-between items-center">
+                                <h4 class="font-bold text-xs uppercase tracking-wider text-sky-800 bg-sky-50 px-3 py-1.5 rounded inline-block">1. Data Pemilik Unit</h4>
+                                <span class="text-[11px] text-sky-600 font-medium"><i class="fa-solid fa-lightbulb"></i> Ketik nama/WA untuk cari pelanggan lama</span>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 relative">
+                                <div class="relative">
                                     <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Pelanggan <span class="text-rose-500">*</span></label>
-                                    <input type="text" id="rep-nama" required placeholder="Contoh: Budi Santoso" class="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-sky-500 outline-none">
+                                    <input type="text" id="rep-nama" required onkeyup="searchExistingCustomer(this.value, 'nama')" autocomplete="off" placeholder="Contoh: Budi Santoso" class="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-sky-500 outline-none">
+                                    <!-- Dropdown Autocomplete -->
+                                    <div id="customer-suggestions" class="absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-lg shadow-xl z-30 max-h-48 overflow-y-auto hidden"></div>
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold text-slate-700 mb-1">No. WhatsApp <span class="text-rose-500">*</span></label>
-                                    <input type="tel" id="rep-wa" required placeholder="081234567890" class="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-sky-500 outline-none">
+                                    <input type="tel" id="rep-wa" required onkeyup="searchExistingCustomer(this.value, 'wa')" placeholder="081234567890" class="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-sky-500 outline-none">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold text-slate-700 mb-1">Alamat / Keterangan</label>
@@ -458,7 +468,7 @@
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 border-b pb-4">
                         <div>
                             <h3 class="font-bold text-slate-800 text-base">Database Pelanggan Toko</h3>
-                            <p class="text-xs text-slate-500">Daftar pelanggan beserta riwayat unit service</p>
+                            <p class="text-xs text-slate-500">Daftar pelanggan beserta riwayat unit service yang pernah masuk</p>
                         </div>
                         <input type="text" id="search-customer-input" onkeyup="renderCustomerTable()" placeholder="Cari Nama atau No. WA..." class="text-xs px-3 py-2 rounded-lg border border-slate-300 w-full md:w-64">
                     </div>
@@ -1277,15 +1287,24 @@
         </div>
     </div>
 
-    <!-- POPUP MODAL OPSICETAK NOTA -->
+    <!-- POPUP MODAL OPSICETAK NOTA & PDF -->
     <div id="modal-print-options" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full p-5 md:p-6 space-y-4">
             <div class="flex justify-between items-center border-b pb-3">
-                <h3 class="font-bold text-slate-800 text-base">Pilihan Format Cetak Nota / Struk</h3>
+                <h3 class="font-bold text-slate-800 text-base">Pilihan Format Cetak & Dokumen Nota</h3>
                 <button onclick="closePrintOptionsModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             <div class="space-y-4 text-xs">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div onclick="selectPrintFormat('PDF')" class="p-4 rounded-xl border-2 border-rose-200 bg-rose-50 hover:border-rose-500 cursor-pointer transition space-y-2 col-span-1 md:col-span-2 shadow-sm">
+                        <div class="flex items-center space-x-3 text-rose-600">
+                            <i class="fa-solid fa-file-pdf text-2xl"></i>
+                            <div>
+                                <span class="font-bold text-sm text-slate-800 block">Nota Resmi PDF Professional</span>
+                                <span class="text-[11px] text-slate-500">Download file PDF untuk dikirim via WhatsApp & Sosmed</span>
+                            </div>
+                        </div>
+                    </div>
                     <div onclick="selectPrintFormat('THERMAL_58')" class="p-4 rounded-xl border-2 border-slate-200 hover:border-sky-500 cursor-pointer transition space-y-2 bg-slate-50">
                         <div class="flex items-center space-x-2 text-sky-600">
                             <i class="fa-solid fa-receipt text-xl"></i>
@@ -1309,17 +1328,24 @@
         </div>
     </div>
 
+    <!-- PREVIEW NOTA & OPERASI PDF/KIRIM WA -->
     <div id="modal-receipt-preview" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full p-5 md:p-6 space-y-4 flex flex-col max-h-[90vh]">
             <div class="flex justify-between items-center border-b pb-2">
-                <h3 class="font-bold text-slate-800 text-sm">Preview Cetak Nota Rangkap</h3>
+                <h3 class="font-bold text-slate-800 text-sm">Preview Dokumen Nota Service</h3>
                 <button onclick="closeReceiptPreview()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="overflow-y-auto flex-1 bg-slate-100 p-4 rounded border flex justify-center" id="printable-area"></div>
-            <div class="flex space-x-2 pt-2">
-                <button onclick="closeReceiptPreview()" class="flex-1 py-2 border rounded-lg text-xs font-semibold">Tutup</button>
-                <button onclick="window.print()" class="flex-1 py-2 bg-sky-600 text-white rounded-lg text-xs font-bold flex items-center justify-center space-x-1">
-                    <i class="fa-solid fa-print"></i><span>Cetak Sekarang</span>
+            <div class="flex flex-wrap gap-2 pt-2" id="preview-action-buttons">
+                <button onclick="closeReceiptPreview()" class="flex-1 py-2.5 border rounded-lg text-xs font-semibold">Tutup</button>
+                <button id="btn-export-pdf" onclick="exportReceiptToPDF()" class="flex-1 py-2.5 bg-rose-600 text-white rounded-lg text-xs font-bold flex items-center justify-center space-x-1.5 hover:bg-rose-700">
+                    <i class="fa-solid fa-file-pdf"></i><span>Download File PDF</span>
+                </button>
+                <button id="btn-share-wa" onclick="sharePDFToWhatsApp()" class="flex-1 py-2.5 bg-emerald-600 text-white rounded-lg text-xs font-bold flex items-center justify-center space-x-1.5 hover:bg-emerald-700">
+                    <i class="fa-brands fa-whatsapp"></i><span>Kirim WA & Sosmed</span>
+                </button>
+                <button onclick="window.print()" class="flex-1 py-2.5 bg-sky-600 text-white rounded-lg text-xs font-bold flex items-center justify-center space-x-1.5 hover:bg-sky-700">
+                    <i class="fa-solid fa-print"></i><span>Cetak Fisik</span>
                 </button>
             </div>
         </div>
@@ -1568,9 +1594,74 @@
                 });
             });
 
+            // Klik di luar saran pelanggan untuk menutupnya
+            document.addEventListener('click', (e) => {
+                const sugBox = document.getElementById('customer-suggestions');
+                if (sugBox && !sugBox.contains(e.target) && e.target.id !== 'rep-nama' && e.target.id !== 'rep-wa') {
+                    sugBox.classList.add('hidden');
+                }
+            });
+
             loadDataFromFirebase();
             generateNextNotaNumber();
         });
+
+        // -------------------------------------------------------------
+        // AUTO-SUGGESTION DATA PELANGGAN YANG PERNAH SERVICE
+        // -------------------------------------------------------------
+        function searchExistingCustomer(query, field) {
+            const sugBox = document.getElementById('customer-suggestions');
+            if (!query || query.trim().length < 2) {
+                sugBox.classList.add('hidden');
+                return;
+            }
+
+            const q = query.toLowerCase().trim();
+            const customersMap = {};
+
+            // Dapatkan riwayat pelanggan unik
+            window.dbService.forEach(s => {
+                if (s.nama && s.wa) {
+                    const key = s.wa.trim();
+                    if (!customersMap[key]) {
+                        customersMap[key] = { nama: s.nama, wa: s.wa, alamat: s.alamat || '' };
+                    }
+                }
+            });
+
+            const results = Object.values(customersMap).filter(c => {
+                return c.nama.toLowerCase().includes(q) || c.wa.includes(q);
+            });
+
+            if (results.length === 0) {
+                sugBox.classList.add('hidden');
+                return;
+            }
+
+            sugBox.innerHTML = '';
+            results.forEach(c => {
+                const item = document.createElement('div');
+                item.className = 'p-2.5 border-b border-slate-100 hover:bg-sky-50 cursor-pointer text-xs flex justify-between items-center transition';
+                item.innerHTML = `
+                    <div>
+                        <p class="font-bold text-slate-800">${c.nama}</p>
+                        <p class="text-[10px] text-slate-500">${c.wa} ${c.alamat ? '| ' + c.alamat : ''}</p>
+                    </div>
+                    <span class="text-[10px] bg-sky-100 text-sky-800 px-2 py-0.5 rounded font-semibold">Pelanggan Lama</span>
+                `;
+                item.onclick = () => selectCustomerSuggestion(c);
+                sugBox.appendChild(item);
+            });
+
+            sugBox.classList.remove('hidden');
+        }
+
+        function selectCustomerSuggestion(cust) {
+            document.getElementById('rep-nama').value = cust.nama;
+            document.getElementById('rep-wa').value = cust.wa;
+            document.getElementById('rep-alamat').value = cust.alamat || '';
+            document.getElementById('customer-suggestions').classList.add('hidden');
+        }
 
         function resetPattern() {
             selectedPattern = [];
@@ -1870,7 +1961,7 @@
                     </td>
                     <td class="py-3 px-3 text-center space-x-1">
                         <button onclick="openEditModal('${s.nota}')" class="p-1.5 text-blue-600 hover:bg-blue-50 rounded" title="Edit Data"><i class="fa-solid fa-pen-to-square"></i></button>
-                        <button onclick="openPrintOptionsModalByNota('${s.nota}')" class="p-1.5 text-sky-600 hover:bg-sky-50 rounded" title="Cetak Nota"><i class="fa-solid fa-print"></i></button>
+                        <button onclick="openPrintOptionsModalByNota('${s.nota}')" class="p-1.5 text-sky-600 hover:bg-sky-50 rounded" title="Cetak Nota / PDF"><i class="fa-solid fa-print"></i></button>
                         <button onclick="sendWAStatus('${s.nota}')" class="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded" title="Kirim WA"><i class="fa-brands fa-whatsapp text-sm"></i></button>
                     </td>
                 `;
@@ -2435,14 +2526,142 @@
             document.getElementById('modal-receipt-preview').classList.add('hidden');
         }
 
+        // -------------------------------------------------------------
+        // EKSPOR NOTA KE FORMAT PDF & SHARING WA / SOSMED
+        // -------------------------------------------------------------
+        function exportReceiptToPDF() {
+            const element = document.getElementById('pdf-nota-content');
+            if (!element) {
+                alert('Tampilan PDF tidak tersedia untuk opsi cetak ini!');
+                return;
+            }
+
+            const notaNo = currentPrintNotaData ? currentPrintNotaData.nota : 'Nota_Service';
+            const opt = {
+                margin:       [0.3, 0.3, 0.3, 0.3],
+                filename:     `Nota_Service_${notaNo}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save();
+        }
+
+        function sharePDFToWhatsApp() {
+            if (!currentPrintNotaData) return;
+            const s = currentPrintNotaData;
+            let phone = s.wa.replace(/[^0-9]/g, '');
+            if (phone.startsWith('0')) phone = '62' + phone.slice(1);
+
+            // Unduh file PDF secara otomatis saat tombol berbagi diklik
+            exportReceiptToPDF();
+
+            const text = `Halo Kak *${s.nama}*,\nBerikut adalah Nota Service Resmi untuk perangkat *${s.tipe}* Kakak di *${window.storeSettings.namaToko}*:\n\n` +
+                         `• *No. Nota*: ${s.nota}\n` +
+                         `• *Kerusakan*: ${s.kerusakan}\n` +
+                         `• *Total Biaya*: ${formatRp(s.biaya)}\n` +
+                         `• *Status*: ${s.status.toUpperCase()}\n\n` +
+                         `_Silakan lampirkan/kirimkan file PDF Nota yang baru saja terdownload ini sebagai dokumen bukti resmi Kak._ Terima kasih!`;
+
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(text)}`, '_blank');
+        }
+
         function renderPrintableArea(s, format) {
             const container = document.getElementById('printable-area');
             if (!container || !s) return;
             const cfg = window.storeSettings;
             const statusBayarText = s.isLunas ? 'LUNAS' : `BELUM LUNAS (Piutang: ${formatRp(s.biaya - s.dp)})`;
 
-            if (format === 'DOT_MATRIX') {
-                // Rancang nota rangkap ala continuous form dot matrix yang umum digunakan (Rangkap 3: Lembar 1 Putih = Pelanggan, Lembar 2 Merah = Kasir/Keuangan, Lembar 3 Kuning = Arsip Teknisi)
+            // Opsi 1: DOKUMEN NOTA PDF PROFESSIONAL
+            if (format === 'PDF') {
+                container.className = 'w-full flex justify-center bg-slate-200 p-2 overflow-x-auto';
+                container.innerHTML = `
+                    <div id="pdf-nota-content" class="pdf-nota-container bg-white border border-slate-300 shadow-md text-xs space-y-6">
+                        <div class="flex justify-between items-start border-b-2 border-slate-800 pb-4">
+                            <div>
+                                <h1 class="text-xl font-extrabold text-slate-900 tracking-wider">${cfg.namaToko}</h1>
+                                <p class="text-slate-600 text-[11px] font-medium max-w-sm mt-1">${cfg.alamat}</p>
+                                <p class="text-slate-600 text-[11px]">WhatsApp / Telp: <b class="text-slate-800">${cfg.wa}</b></p>
+                            </div>
+                            <div class="text-right">
+                                <span class="bg-slate-900 text-white font-extrabold text-xs px-3 py-1 rounded inline-block uppercase">NOTA SERVICE RESMI</span>
+                                <h2 class="text-base font-mono font-bold text-sky-700 mt-2">${s.nota}</h2>
+                                <p class="text-[11px] text-slate-500">Tanggal: ${formatTanggal(s.tanggal)}</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4 bg-slate-50 p-3.5 rounded-lg border border-slate-200">
+                            <div class="space-y-1">
+                                <span class="font-bold text-[10px] text-slate-400 uppercase tracking-wide">Informasi Pelanggan</span>
+                                <p class="font-bold text-slate-800 text-sm">${s.nama}</p>
+                                <p class="text-slate-600">No. WA: ${s.wa}</p>
+                                <p class="text-slate-600">Alamat: ${s.alamat || '-'}</p>
+                            </div>
+                            <div class="space-y-1 text-right">
+                                <span class="font-bold text-[10px] text-slate-400 uppercase tracking-wide">Detail Perangkat</span>
+                                <p class="font-bold text-slate-800 text-sm">${s.tipe}</p>
+                                <p class="text-slate-600">No. IMEI / SN: ${s.imei || '-'}</p>
+                                <p class="text-slate-600">Teknisi PJ: ${s.teknisi}</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <table class="w-full border-collapse border border-slate-300 text-left">
+                                <thead class="bg-slate-800 text-white font-bold uppercase text-[10px]">
+                                    <tr>
+                                        <th class="p-2 border border-slate-300">Deskripsi Service & Diagnosis Kerusakan</th>
+                                        <th class="p-2 border border-slate-300">Kelengkapan & Kondisi Fisik</th>
+                                        <th class="p-2 border border-slate-300 text-right">Biaya (Rp)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="p-2.5 border border-slate-300 align-top">
+                                            <p class="font-bold text-slate-800">${s.kerusakan}</p>
+                                            <p class="text-[10px] text-slate-500 mt-1">Sandi/Pola: ${s.passcode || s.pola || '-'}</p>
+                                            <p class="text-[10px] text-slate-500">Penggantian Part: ${s.partName || '-'}</p>
+                                        </td>
+                                        <td class="p-2.5 border border-slate-300 align-top text-[11px] text-slate-600">
+                                            <p><b>Kelengkapan:</b> ${s.kelengkapan || '-'}</p>
+                                            <p class="mt-0.5"><b>Kondisi Fisik:</b> ${s.kondisiFisik || '-'}</p>
+                                            <p class="mt-0.5"><b>Garansi:</b> ${s.garansi || 0} Hari</p>
+                                        </td>
+                                        <td class="p-2.5 border border-slate-300 align-top text-right font-extrabold text-slate-800 text-sm">
+                                            ${formatRp(s.biaya)}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="flex justify-between items-start pt-2">
+                            <div class="w-1/2 pr-4 space-y-1.5">
+                                <p class="font-bold text-[11px] text-slate-800 uppercase">Syarat & Ketentuan Ketentuan Service:</p>
+                                <p class="text-[10px] text-slate-600 leading-relaxed border-l-2 border-sky-500 pl-2" style="white-space: pre-line;">${cfg.syarat}</p>
+                            </div>
+                            <div class="w-1/2 space-y-1 bg-slate-50 p-3 rounded-lg border border-slate-200 text-right">
+                                <div class="flex justify-between text-xs"><span class="text-slate-600">Total Biaya Service:</span><b class="text-slate-800">${formatRp(s.biaya)}</b></div>
+                                <div class="flex justify-between text-xs"><span class="text-slate-600">Uang Muka (DP):</span><b class="text-emerald-700">${formatRp(s.dp)}</b></div>
+                                <hr class="my-1 border-slate-300">
+                                <div class="flex justify-between text-sm font-extrabold"><span class="text-rose-700">Sisa Pelunasan:</span><span class="text-rose-700">${formatRp(s.biaya - s.dp)}</span></div>
+                                <div class="text-center bg-slate-800 text-white text-[10px] py-1 rounded font-bold uppercase mt-2">[STATUS: ${statusBayarText}]</div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-8 pt-8 text-center text-xs">
+                            <div>
+                                <p class="text-slate-500 mb-12">Pelanggan / Pemilik Unit,</p>
+                                <p class="font-bold text-slate-800 border-t border-slate-400 inline-block px-8">(${s.nama})</p>
+                            </div>
+                            <div>
+                                <p class="text-slate-500 mb-12">Hormat Kami,</p>
+                                <p class="font-bold text-slate-800 border-t border-slate-400 inline-block px-8">(${cfg.namaToko})</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (format === 'DOT_MATRIX') {
                 const copies = [
                     { title: "LEMBAR 1 : PUTIH (UNTUK PELANGGAN / CUSTOMER)", copyClass: "border-b-2 border-dashed pb-6 mb-6" },
                     { title: "LEMBAR 2 : MERAH (UNTUK KASIR / ADMINISTRASI)", copyClass: "border-b-2 border-dashed pb-6 mb-6" },
@@ -2450,7 +2669,7 @@
                 ];
 
                 let htmlContent = `<div class="w-full space-y-8">`;
-                copies.forEach((cp, idx) => {
+                copies.forEach((cp) => {
                     htmlContent += `
                         <div class="dotmatrix-print ${cp.copyClass}">
                             <div class="text-[10px] bg-slate-200 px-2 py-0.5 font-bold mb-2 text-center border border-black">${cp.title}</div>
@@ -2678,22 +2897,29 @@
             const tbody = document.getElementById('customer-table-body');
             if (!tbody) return;
             tbody.innerHTML = '';
+            const q = (document.getElementById('search-customer-input').value || '').toLowerCase().trim();
+
             const customersMap = {};
             window.dbService.forEach(s => {
-                if (!customersMap[s.wa]) customersMap[s.wa] = { nama: s.nama, wa: s.wa, alamat: s.alamat || '-', total: 0, lastHp: s.tipe };
-                customersMap[s.wa].total += 1;
-                customersMap[s.wa].lastHp = s.tipe;
+                if (s.wa) {
+                    if (!customersMap[s.wa]) customersMap[s.wa] = { nama: s.nama, wa: s.wa, alamat: s.alamat || '-', total: 0, lastHp: s.tipe };
+                    customersMap[s.wa].total += 1;
+                    customersMap[s.wa].lastHp = s.tipe;
+                }
             });
-            Object.values(customersMap).forEach(c => {
+
+            const filtered = Object.values(customersMap).filter(c => c.nama.toLowerCase().includes(q) || c.wa.includes(q));
+
+            filtered.forEach(c => {
                 const tr = document.createElement('tr');
                 tr.className = 'hover:bg-slate-50 border-b';
                 tr.innerHTML = `
                     <td class="py-3 px-3 font-bold text-slate-800">${c.nama}</td>
-                    <td class="py-3 px-3 text-slate-600">${c.wa}</td>
+                    <td class="py-3 px-3 text-slate-600 font-mono">${c.wa}</td>
                     <td class="py-3 px-3 text-slate-500">${c.alamat}</td>
                     <td class="py-3 px-3 font-bold text-sky-700">${c.total} kali</td>
-                    <td class="py-3 px-3 text-slate-700">${c.lastHp}</td>
-                    <td class="py-3 px-3 text-center"><a href="https://wa.me/${c.wa.replace(/[^0-9]/g, '')}" target="_blank" class="px-2.5 py-1 bg-emerald-600 text-white rounded text-[11px] font-bold">Chat WA</a></td>
+                    <td class="py-3 px-3 text-slate-700 font-semibold">${c.lastHp}</td>
+                    <td class="py-3 px-3 text-center"><a href="https://wa.me/${c.wa.replace(/[^0-9]/g, '')}" target="_blank" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-bold inline-flex items-center gap-1"><i class="fa-brands fa-whatsapp"></i> Chat WA</a></td>
                 `;
                 tbody.appendChild(tr);
             });
