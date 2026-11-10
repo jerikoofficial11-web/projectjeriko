@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PROJECT JERIKO - Sistem Kasir & Audit Keuangan Resmi v9.5</title>
+    <title>PROJECT JERIKO - Sistem Kasir & Audit Keuangan Resmi v10</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -57,6 +57,52 @@
         
         /* PDF Specific Sheet Layout */
         .pdf-nota-container { width: 100%; max-width: 800px; padding: 24px; background: #ffffff; color: #000000; font-family: sans-serif; }
+    
+        /* ===== MODERN UI LAYER v10 ===== */
+        :root { --ease: cubic-bezier(.22,1,.36,1); }
+        html { scroll-behavior: smooth; }
+        body.bg-slate-100 {
+            background:
+                radial-gradient(1100px 560px at 100% -10%, #e0f2fe 0%, transparent 60%),
+                radial-gradient(900px 500px at -10% 110%, #ede9fe 0%, transparent 55%),
+                #f1f5f9;
+        }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        #app-sidebar { background: linear-gradient(180deg, #0f172a 0%, #0b1220 100%); }
+        .nav-btn { position: relative; transition: background .25s var(--ease), transform .25s var(--ease), color .25s; }
+        .nav-btn:hover { transform: translateX(3px); }
+        .nav-btn.active-tab { background: linear-gradient(90deg, rgba(14,165,233,.25), rgba(14,165,233,.03)); box-shadow: inset 3px 0 0 #38bdf8; color: #fff; }
+        main > header.bg-white { background: rgba(255,255,255,.78); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+        section .bg-white.rounded-xl { border-radius: 1rem; border-color: rgba(226,232,240,.85);
+            box-shadow: 0 1px 2px rgba(15,23,42,.04), 0 10px 28px -14px rgba(15,23,42,.12);
+            transition: box-shadow .3s var(--ease), transform .3s var(--ease); }
+        .bg-white.rounded-xl.p-3\.5:hover, .bg-white.rounded-xl.p-3\.5:hover { transform: translateY(-3px);
+            box-shadow: 0 14px 30px -12px rgba(2,132,199,.25); }
+        .tab-content:not(.hidden) { animation: tabIn .45s var(--ease) backwards; }
+        @keyframes tabIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes popIn { from { opacity: 0; transform: translateY(18px) scale(.96); } to { opacity: 1; transform: none; } }
+        @keyframes riseIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+        div.fixed[id^="modal-"]:not(.hidden) { animation: fadeIn .2s ease backwards; }
+        div.fixed[id^="modal-"]:not(.hidden) > div { animation: popIn .35s var(--ease) backwards; }
+        #tab-dashboard .grid > div { animation: riseIn .5s var(--ease) backwards; }
+        #tab-dashboard .grid > div:nth-child(2) { animation-delay: .05s; }
+        #tab-dashboard .grid > div:nth-child(3) { animation-delay: .1s; }
+        #tab-dashboard .grid > div:nth-child(4) { animation-delay: .15s; }
+        #tab-dashboard .grid > div:nth-child(5) { animation-delay: .2s; }
+        button { transition: transform .2s var(--ease), background-color .2s, box-shadow .25s, color .2s, opacity .2s; }
+        button:not(:disabled):active { transform: scale(.97); }
+        button[type="submit"], .bg-sky-600, .bg-emerald-600, .bg-rose-600 { box-shadow: 0 6px 16px -8px currentColor; }
+        input, select, textarea { transition: border-color .2s, box-shadow .25s, background-color .2s; }
+        input:focus, select:focus, textarea:focus { border-color: #38bdf8 !important; box-shadow: 0 0 0 4px rgba(14,165,233,.15) !important; outline: none; }
+        tbody tr { transition: background-color .2s; }
+        thead th { letter-spacing: .03em; }
+        .pattern-dot { transition: transform .2s var(--ease), background .2s, box-shadow .2s; }
+        .pattern-dot:hover { transform: scale(1.12); }
+        #customer-suggestions { animation: popIn .25s var(--ease) backwards; }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
     </style>
 </head>
 <body class="h-screen flex flex-col md:flex-row overflow-hidden bg-slate-100">
@@ -197,7 +243,7 @@
                         <p class="text-[10px] md:text-[11px] text-emerald-600 mt-1 font-medium">Transaksi Selesai</p>
                     </div>
                     <div class="bg-white p-3.5 md:p-4 rounded-xl border border-slate-200 shadow-sm col-span-2 lg:col-span-1">
-                        <span class="text-[11px] md:text-xs font-semibold text-slate-500 uppercase">Omset Pendapatan Lunas</span>
+                        <span class="text-[11px] md:text-xs font-semibold text-slate-500 uppercase">Omset Bulan Ini (Lunas)</span>
                         <h3 class="text-lg md:text-xl font-bold text-slate-800 mt-2 truncate" id="dash-omset-bulan">Rp 0</h3>
                         <p class="text-[10px] md:text-[11px] text-purple-600 mt-1 font-medium">Laba Bersih: <span id="dash-laba-bersih">Rp 0</span></p>
                     </div>
@@ -212,7 +258,7 @@
                 <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b pb-3 gap-2">
                         <div>
-                            <h4 class="font-bold text-slate-800 text-sm uppercase tracking-wide">Grafik Analisis Finansial (Tahun 2026)</h4>
+                            <h4 class="font-bold text-slate-800 text-sm uppercase tracking-wide">Grafik Analisis Finansial (Tahun <span id="chart-year">2026</span>)</h4>
                             <p class="text-xs text-slate-500">Komparasi Omset, Laba Kotor, dan Laba Bersih secara real-time.</p>
                         </div>
                         <div class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200">
@@ -496,7 +542,7 @@
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b pb-4 no-print">
                         <div>
                             <h3 class="font-bold text-slate-800 text-base md:text-lg">Generator Invoice Bulanan</h3>
-                            <p class="text-xs text-slate-500">Pilih pelanggan dan periode bulan untuk cetak tagihan bulanan.</p>
+                            <p class="text-xs text-slate-500">Pilih pelanggan dan periode. Hanya unit berstatus Selesai (menunggu diambil) yang ditagihkan; unit Diambil tidak ditampilkan.</p>
                         </div>
                         <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
                             <select id="inv-client-select" class="text-xs p-2.5 rounded-lg border border-slate-300 font-bold bg-white flex-1 md:w-60">
@@ -550,10 +596,12 @@
                                         <th class="py-3 px-3 border">Unit Perangkat & Kerusakan</th>
                                         <th class="py-3 px-3 border">Teknisi</th>
                                         <th class="py-3 px-3 border text-right">Total Biaya (Rp)</th>
+                                        <th class="py-3 px-3 border text-right">DP (Rp)</th>
+                                        <th class="py-3 px-3 border text-right">Sisa Tagihan (Rp)</th>
                                     </tr>
                                 </thead>
                                 <tbody id="inv-items-tbody" class="divide-y divide-slate-100">
-                                    <tr><td colspan="5" class="text-center py-6 text-slate-400 border">Silakan pilih pelanggan dan klik "Tampilkan Tagihan".</td></tr>
+                                    <tr><td colspan="7" class="text-center py-6 text-slate-400 border">Silakan pilih pelanggan dan klik "Tampilkan Tagihan".</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -561,7 +609,7 @@
                         <div class="flex justify-end pt-2">
                             <div class="w-full md:w-72 space-y-2 text-xs bg-slate-50 p-4 rounded-xl border">
                                 <div class="flex justify-between font-bold text-slate-700">
-                                    <span>Total Tagihan Bulanan:</span>
+                                    <span>Total Sisa Tagihan:</span>
                                     <span class="text-blue-700 text-base" id="inv-total-display">Rp 0</span>
                                 </div>
                             </div>
@@ -892,7 +940,7 @@
                         <div class="bg-slate-50 p-4 rounded-xl border">
                             <span class="text-slate-500 block mb-1 uppercase font-bold">Saldo Kas Sistem:</span>
                             <h4 class="text-lg font-extrabold text-slate-800 font-mono" id="recon-system-balance">Rp 0</h4>
-                            <p class="text-[10px] text-slate-400 mt-1">Akumulasi penerimaan kas - pengeluaran</p>
+                            <p class="text-[10px] text-slate-400 mt-1">Penerimaan tunai - pengeluaran kas (transfer/QRIS tidak dihitung)</p>
                         </div>
                         <div class="bg-slate-50 p-4 rounded-xl border">
                             <label class="block font-bold text-slate-700 mb-1 uppercase">Masukkan Uang Fisik Aktual (Rp):</label>
@@ -934,19 +982,19 @@
 
                     <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
                         <div class="bg-white p-3.5 md:p-4 rounded-xl border border-slate-200 shadow-sm">
-                            <span class="text-[11px] md:text-xs font-semibold text-slate-500 uppercase">Total Arus Kas Masuk</span>
+                            <span class="text-[11px] md:text-xs font-semibold text-slate-500 uppercase">Kas Masuk (Bulan Ini)</span>
                             <h3 class="text-lg md:text-2xl font-bold text-emerald-600 mt-1 truncate" id="kas-sum-masuk">Rp 0</h3>
                         </div>
                         <div class="bg-white p-3.5 md:p-4 rounded-xl border border-slate-200 shadow-sm">
-                            <span class="text-[11px] md:text-xs font-semibold text-slate-500 uppercase">Total Kas Keluar</span>
+                            <span class="text-[11px] md:text-xs font-semibold text-slate-500 uppercase">Kas Keluar (Bulan Ini)</span>
                             <h3 class="text-lg md:text-2xl font-bold text-rose-600 mt-1 truncate" id="kas-sum-keluar">Rp 0</h3>
                         </div>
                         <div class="bg-white p-3.5 md:p-4 rounded-xl border border-slate-200 shadow-sm">
-                            <span class="text-[11px] md:text-xs font-semibold text-slate-500 uppercase">Laba Kotor</span>
+                            <span class="text-[11px] md:text-xs font-semibold text-slate-500 uppercase">Laba Kotor (Bulan Ini)</span>
                             <h3 class="text-lg md:text-2xl font-bold text-sky-600 mt-1 truncate" id="kas-sum-kotor">Rp 0</h3>
                         </div>
                         <div class="bg-white p-3.5 md:p-4 rounded-xl border border-slate-200 shadow-sm">
-                            <span class="text-[11px] md:text-xs font-semibold text-slate-500 uppercase">Laba Bersih</span>
+                            <span class="text-[11px] md:text-xs font-semibold text-slate-500 uppercase">Laba Bersih (Bulan Ini)</span>
                             <h3 class="text-lg md:text-2xl font-bold text-purple-600 mt-1 truncate" id="kas-sum-bersih">Rp 0</h3>
                         </div>
                     </div>
@@ -1077,8 +1125,16 @@
                                     <span class="text-emerald-700" id="lr-val-labakotor">Rp 0</span>
                                 </div>
                                 <div class="flex justify-between py-1 border-b border-dashed">
-                                    <span class="text-slate-600">Dikurangi: Pengeluaran Kas & Cost Bulanan Toko</span>
+                                    <span class="text-slate-600">Ditambah: Pendapatan Lain-lain (Kas Masuk Manual)</span>
+                                    <span class="font-bold text-emerald-600" id="lr-val-lain">Rp 0</span>
+                                </div>
+                                <div class="flex justify-between py-1 border-b border-dashed">
+                                    <span class="text-slate-600">Dikurangi: Pengeluaran Kas Operasional (di luar pembelian part)</span>
                                     <span class="font-bold text-rose-600" id="lr-val-keluar">Rp 0</span>
+                                </div>
+                                <div class="flex justify-between py-1 border-b border-dashed">
+                                    <span class="text-slate-600">Dikurangi: Cost Bulanan Toko</span>
+                                    <span class="font-bold text-rose-600" id="lr-val-cost">Rp 0</span>
                                 </div>
                                 <div class="flex justify-between py-1 border-b border-dashed">
                                     <span class="text-slate-600">Dikurangi: Estimasi Komisi Gaji Teknisi (Dari Profit)</span>
@@ -1427,10 +1483,7 @@
             { id: '1', nama: 'Solder Uap Quick 857DW+', kategori: 'Mesin / Alat', jml: 2, nilai: 1500000 }
         ];
         window.dbKas = [];
-        window.dbCostBulanan = [
-            { id: '1', nama: 'Sewa Ruko Toko', kategori: 'Sewa Tempat / Ruko', bulan: '12', tahun: 2026, nominal: 1500000, ket: 'Pembayaran Awal Bulan' },
-            { id: '2', nama: 'Tagihan Listrik & Indihome', kategori: 'Listrik & Air', bulan: '12', tahun: 2026, nominal: 450000, ket: 'Rutin Bulanan' }
-        ];
+        window.dbCostBulanan = [];
         window.dbAuditLogs = [];
         window.storeSettings = {
             namaToko: 'PROJECT JERIKO',
@@ -1442,6 +1495,7 @@
             syarat: '1. Nota ini sah sebagai bukti serah terima unit.\n2. Pembayaran LUNAS saat unit diambil.\n3. Garansi berlaku sesuai jenis komponen.'
         };
 
+        window.migrasiCostSeedV10 = false;
         let selectedPattern = [];
         let activeFilterStatus = 'ALL';
         let currentTargetNota = '';
@@ -1451,6 +1505,7 @@
         // LOAD & SYNC DATA DARI / KE FIREBASE FIRESTORE
         function loadDataFromFirebase() {
             db.collection("project_jeriko_store").doc("main_data").onSnapshot((doc) => {
+                let needSave = false;
                 if (doc.exists) {
                     const data = doc.data();
                     if (data.dbService) window.dbService = data.dbService;
@@ -1462,9 +1517,21 @@
                     if (data.dbCostBulanan) window.dbCostBulanan = data.dbCostBulanan;
                     if (data.dbAuditLogs) window.dbAuditLogs = data.dbAuditLogs;
                     if (data.storeSettings) window.storeSettings = data.storeSettings;
+                    window.migrasiCostSeedV10 = !!data.migrasiCostSeedV10;
+                    // Migrasi satu kali: hapus data cost contoh bawaan (Sewa Ruko & Listrik/Indihome) yang bukan input pengguna
+                    if (!window.migrasiCostSeedV10) {
+                        window.dbCostBulanan = window.dbCostBulanan.filter(c => !(
+                            (c.id === '1' && c.nama === 'Sewa Ruko Toko' && c.nominal === 1500000) ||
+                            (c.id === '2' && c.nama === 'Tagihan Listrik & Indihome' && c.nominal === 450000)
+                        ));
+                        window.migrasiCostSeedV10 = true;
+                        needSave = true;
+                    }
                 } else {
-                    saveAllToFirebase();
+                    window.migrasiCostSeedV10 = true;
+                    needSave = true;
                 }
+                if (needSave) saveAllToFirebase();
                 refreshAllUI();
             }, (error) => {
                 console.error("Gagal sinkronisasi Firebase:", error);
@@ -1481,7 +1548,8 @@
                 dbKas: window.dbKas,
                 dbCostBulanan: window.dbCostBulanan,
                 dbAuditLogs: window.dbAuditLogs,
-                storeSettings: window.storeSettings
+                storeSettings: window.storeSettings,
+                migrasiCostSeedV10: !!window.migrasiCostSeedV10
             };
             db.collection("project_jeriko_store").doc("main_data").set(payload)
               .catch((error) => { console.error("Error saving to Firestore: ", error); });
@@ -1517,7 +1585,116 @@
         }
 
         function formatRp(num) {
-            return 'Rp ' + (num || 0).toLocaleString('id-ID');
+            const n = Math.round(Number(num) || 0);
+            return (n < 0 ? '-Rp ' : 'Rp ') + Math.abs(n).toLocaleString('id-ID');
+        }
+
+        const NAMA_BULAN = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+
+        function esc(v) {
+            return String(v == null ? '' : v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        }
+
+        function periodLabel(bln, thn) {
+            return bln === 'ALL' ? `Tahun ${thn}` : `${NAMA_BULAN[parseInt(bln, 10) - 1]} ${thn}`;
+        }
+
+        function initPeriodDefaults() {
+            const now = new Date();
+            const m = String(now.getMonth() + 1).padStart(2, '0');
+            const y = now.getFullYear();
+            ['inv-bulan','cost-bulan','cost-filter-bulan','lr-bulan','reset-kas-bulan'].forEach(id => { const el = document.getElementById(id); if (el) el.value = m; });
+            ['inv-tahun','cost-tahun','cost-filter-tahun','lr-tahun','reset-kas-tahun'].forEach(id => { const el = document.getElementById(id); if (el) el.value = y; });
+        }
+
+        // ===== MESIN KEUANGAN (satu sumber kebenaran untuk dashboard, grafik, kas & laporan audit) =====
+        // Kategori kas: DP, PELUNASAN, LAIN (masuk) | HPP, REFUND, OPERASIONAL (keluar). Data lama ditebak dari keterangan.
+        function kasKategori(k) {
+            if (k.kategori) return k.kategori;
+            const ket = (k.ket || '').toLowerCase();
+            if (k.jenis === 'Masuk') {
+                if (ket.startsWith('dp service')) return 'DP';
+                if (ket.startsWith('pelunasan')) return 'PELUNASAN';
+                return 'LAIN';
+            }
+            if (ket.startsWith('beli sparepart luar')) return 'HPP';
+            return 'OPERASIONAL';
+        }
+
+        function tglEfektif(s) { return new Date(s.tanggalDiambil || s.tanggal); }
+
+        function inPeriod(dateLike, bln, thn) {
+            const d = new Date(dateLike);
+            if (d.getFullYear() !== thn) return false;
+            return bln === 'ALL' || String(d.getMonth() + 1).padStart(2, '0') === bln;
+        }
+
+        function getCommissionPct(s) {
+            const t = window.dbStaff.find(st => st.nama === s.teknisi);
+            return t ? t.komisi : 40;
+        }
+
+        function computeFinance(bln, thn) {
+            const f = {
+                omset: 0, hpp: 0, komisi: 0, penerimaan: 0, pendapatanLain: 0,
+                kasOperasional: 0, kasKeluarTotal: 0, cost: 0, piutang: 0,
+                omsetItems: [], hppItems: [], komisiItems: [], penerimaanItems: [],
+                lainItems: [], opItems: [], costItems: [], piutangItems: []
+            };
+
+            // Omset, HPP & komisi: hanya unit Diambil & Lunas, dihitung pada tanggal pengambilan
+            window.dbService.filter(s => s.status === 'Diambil' && inPeriod(tglEfektif(s), bln, thn)).forEach(s => {
+                const tgl = formatTanggal(tglEfektif(s));
+                const hpp = s.hppPart || 0;
+                const profit = s.biaya - hpp;
+                f.omset += s.biaya;
+                f.omsetItems.push({ tanggal: tgl, ket: `Nota ${s.nota} - ${s.nama} (${s.tipe})`, nominal: s.biaya });
+                if (hpp > 0) {
+                    f.hpp += hpp;
+                    f.hppItems.push({ tanggal: tgl, ket: `Nota ${s.nota} - Part: ${s.partName || '-'}`, nominal: hpp });
+                }
+                if (profit > 0) {
+                    const pct = getCommissionPct(s);
+                    const kom = Math.round(profit * pct / 100);
+                    f.komisi += kom;
+                    f.komisiItems.push({ tanggal: tgl, ket: `Komisi ${s.teknisi} (${pct}%) dari Nota ${s.nota}`, nominal: kom });
+                }
+            });
+
+            // Penerimaan uang & pengeluaran kas: hanya dari buku kas (DP & pelunasan sudah tercatat otomatis di sini -> tidak dihitung dua kali)
+            const label = { DP: 'DP', PELUNASAN: 'Pelunasan', LAIN: 'Pemasukan Lain' };
+            window.dbKas.filter(k => inPeriod(k.tanggal, bln, thn)).forEach(k => {
+                const kat = kasKategori(k);
+                const item = { tanggal: formatTanggal(k.tanggal), ket: `${label[kat] || kat}: ${k.ket}`, nominal: k.nominal };
+                if (k.jenis === 'Masuk') {
+                    f.penerimaan += k.nominal;
+                    f.penerimaanItems.push(item);
+                    if (kat === 'LAIN') { f.pendapatanLain += k.nominal; f.lainItems.push({ tanggal: item.tanggal, ket: k.ket, nominal: k.nominal }); }
+                } else {
+                    f.kasKeluarTotal += k.nominal;
+                    // Pembelian part luar sudah masuk HPP; pengembalian DP bukan beban -> tidak dihitung lagi sebagai pengeluaran operasional
+                    if (kat === 'OPERASIONAL') { f.kasOperasional += k.nominal; f.opItems.push({ tanggal: item.tanggal, ket: k.ket, nominal: k.nominal }); }
+                }
+            });
+
+            // Cost bulanan: hanya sesuai periode yang dipilih
+            window.dbCostBulanan.filter(c => Number(c.tahun) === thn && (bln === 'ALL' || c.bulan === bln)).forEach(c => {
+                f.cost += c.nominal || 0;
+                f.costItems.push({ tanggal: `${c.bulan}/${c.tahun}`, ket: `${c.nama} (${c.kategori})`, nominal: c.nominal || 0 });
+            });
+
+            // Piutang: saldo berjalan saat ini (semua unit belum Diambil/Dibatalkan yang masih ada sisa)
+            window.dbService.filter(s => s.status !== 'Diambil' && s.status !== 'Dibatalkan').forEach(s => {
+                const sisa = s.biaya - (s.dp || 0);
+                if (sisa > 0) {
+                    f.piutang += sisa;
+                    f.piutangItems.push({ tanggal: formatTanggal(s.tanggal), ket: `Piutang Nota ${s.nota} - ${s.nama} (${s.tipe}) [${s.status}]`, nominal: sisa });
+                }
+            });
+
+            f.labaKotor = f.omset - f.hpp;
+            f.labaBersih = f.labaKotor + f.pendapatanLain - f.kasOperasional - f.cost - f.komisi;
+            return f;
         }
 
         function formatTanggal(d) {
@@ -1602,6 +1779,7 @@
                 }
             });
 
+            initPeriodDefaults();
             loadDataFromFirebase();
             generateNextNotaNumber();
         });
@@ -1671,9 +1849,17 @@
         }
 
         function generateNextNotaNumber() {
-            const todayStr = '20261028';
-            const todayCount = window.dbService.filter(s => s.nota && s.nota.includes(todayStr)).length + 1;
-            const nextNota = `SRV-${todayStr}-${String(todayCount).padStart(3, '0')}`;
+            const now = new Date();
+            const todayStr = now.getFullYear() + String(now.getMonth() + 1).padStart(2, '0') + String(now.getDate()).padStart(2, '0');
+            const prefix = `SRV-${todayStr}-`;
+            let max = 0;
+            window.dbService.forEach(s => {
+                if (s.nota && s.nota.startsWith(prefix)) {
+                    const n = parseInt(s.nota.slice(prefix.length), 10) || 0;
+                    if (n > max) max = n;
+                }
+            });
+            const nextNota = prefix + String(max + 1).padStart(3, '0');
             const el = document.getElementById('repair-auto-nota');
             if (el) el.innerText = nextNota;
             return nextNota;
@@ -1732,6 +1918,9 @@
                     tanggal: new Date().toISOString(),
                     ket: `DP Service ${nota} (${nama})`,
                     jenis: 'Masuk',
+                    kategori: 'DP',
+                    nota: nota,
+                    metode: 'CASH',
                     nominal: dp
                 });
             }
@@ -1747,61 +1936,26 @@
         }
 
         function renderDashboard() {
+            const now = new Date();
+            const bln = String(now.getMonth() + 1).padStart(2, '0');
+            const thn = now.getFullYear();
+            const f = computeFinance(bln, thn);
+
             const proses = window.dbService.filter(s => s.status === 'Proses').length;
             const selesai = window.dbService.filter(s => s.status === 'Selesai').length;
             const diambil = window.dbService.filter(s => s.status === 'Diambil').length;
 
-            let omsetLunas = 0;
-            let totalHppLunas = 0;
-            let totalPiutang = 0;
-
-            window.dbService.forEach(s => {
-                const sisaPiutang = s.biaya - s.dp;
-                if (!s.isLunas && sisaPiutang > 0 && s.status !== 'Dibatalkan') {
-                    totalPiutang += sisaPiutang;
-                }
-            });
-
-            window.dbService.filter(s => s.status === 'Diambil').forEach(s => {
-                omsetLunas += s.biaya;
-                totalHppLunas += (s.hppPart || 0);
-            });
-
-            let kasKeluar = 0;
-            window.dbKas.filter(k => k.jenis === 'Keluar').forEach(k => kasKeluar += k.nominal);
-            let costBulananTotal = 0;
-            window.dbCostBulanan.forEach(c => costBulananTotal += (c.nominal || 0));
-
-            const labaKotor = omsetLunas - totalHppLunas;
-
-            let totalGajiTeknisi = 0;
-            window.dbService.filter(s => s.status === 'Diambil').forEach(s => {
-                const profitUnit = s.biaya - (s.hppPart || 0);
-                const tekObj = window.dbStaff.find(st => st.nama === s.teknisi);
-                const komisiPct = tekObj ? tekObj.komisi : 40;
-                if (profitUnit > 0) {
-                    totalGajiTeknisi += (profitUnit * komisiPct / 100);
-                }
-            });
-
-            const labaBersih = labaKotor - kasKeluar - costBulananTotal - totalGajiTeknisi;
-
-            let totalAset = 0;
-            window.dbAsset.forEach(a => totalAset += (a.nilai || 0));
-
-            document.getElementById('dash-dalam-proses').innerText = proses;
-            document.getElementById('dash-selesai').innerText = selesai;
-            document.getElementById('dash-diambil').innerText = diambil;
-            document.getElementById('dash-omset-bulan').innerText = formatRp(omsetLunas);
-            document.getElementById('dash-laba-bersih').innerText = formatRp(labaBersih);
-            document.getElementById('dash-piutang-total').innerText = formatRp(totalPiutang);
-            
-            const dashSummaryOmset = document.getElementById('dash-summary-omset');
-            if (dashSummaryOmset) dashSummaryOmset.innerText = formatRp(omsetLunas);
-            const dashSummaryGross = document.getElementById('dash-summary-gross');
-            if (dashSummaryGross) dashSummaryGross.innerText = formatRp(labaKotor);
-            const dashSummaryNet = document.getElementById('dash-summary-net');
-            if (dashSummaryNet) dashSummaryNet.innerText = formatRp(labaBersih);
+            const setTxt = (id, v) => { const el = document.getElementById(id); if (el) el.innerText = v; };
+            setTxt('dash-dalam-proses', proses);
+            setTxt('dash-selesai', selesai);
+            setTxt('dash-diambil', diambil);
+            setTxt('dash-omset-bulan', formatRp(f.omset));
+            setTxt('dash-laba-bersih', formatRp(f.labaBersih));
+            setTxt('dash-piutang-total', formatRp(f.piutang));
+            setTxt('dash-summary-omset', formatRp(f.omset));
+            setTxt('dash-summary-gross', formatRp(f.labaKotor));
+            setTxt('dash-summary-net', formatRp(f.labaBersih));
+            setTxt('dashboard-analysis-text', `Ringkasan bulan ${NAMA_BULAN[now.getMonth()]} ${thn}. Data tersinkronisasi otomatis via Firebase Firestore untuk multi-perangkat.`);
 
             const tbody = document.getElementById('dash-recent-table');
             if (tbody) {
@@ -1810,10 +1964,10 @@
                     const tr = document.createElement('tr');
                     tr.className = 'hover:bg-slate-50';
                     tr.innerHTML = `
-                        <td class="py-2.5 px-3 font-mono font-bold text-sky-700">${s.nota}</td>
-                        <td class="py-2.5 px-3 font-semibold">${s.nama}</td>
-                        <td class="py-2.5 px-3">${s.tipe}</td>
-                        <td class="py-2.5 px-3 text-slate-600">${s.teknisi}</td>
+                        <td class="py-2.5 px-3 font-mono font-bold text-sky-700">${esc(s.nota)}</td>
+                        <td class="py-2.5 px-3 font-semibold">${esc(s.nama)}</td>
+                        <td class="py-2.5 px-3">${esc(s.tipe)}</td>
+                        <td class="py-2.5 px-3 text-slate-600">${esc(s.teknisi)}</td>
                         <td class="py-2.5 px-3">${getStatusBadge(s.status, s.isLunas)}</td>
                     `;
                     tbody.appendChild(tr);
@@ -1824,72 +1978,44 @@
         function renderFinancialAnalyticsChart() {
             const canvasEl = document.getElementById('financialAnalyticsChart');
             if (!canvasEl) return;
+            const year = new Date().getFullYear();
+            const yEl = document.getElementById('chart-year');
+            if (yEl) yEl.innerText = year;
 
             const monthsLabel = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des'];
-            const monthlyOmset = Array(12).fill(0);
-            const monthlyGrossProfit = Array(12).fill(0);
-            const monthlyNetProfit = Array(12).fill(0);
-
+            const monthlyOmset = [], monthlyGross = [], monthlyNet = [];
             for (let m = 0; m < 12; m++) {
-                const monthStr = String(m + 1).padStart(2, '0');
-                let omsetSub = 0, hppSub = 0;
-                window.dbService.filter(s => s.status === 'Diambil').forEach(s => {
-                    const d = new Date(s.tanggal);
-                    if (d.getFullYear() === 2026 && d.getMonth() === m) {
-                        omsetSub += s.biaya;
-                        hppSub += (s.hppPart || 0);
-                    }
-                });
-                const grossSub = omsetSub - hppSub;
-
-                let kasKeluarSub = 0;
-                window.dbKas.filter(k => k.jenis === 'Keluar').forEach(k => {
-                    const d = new Date(k.tanggal);
-                    if (d.getFullYear() === 2026 && d.getMonth() === m) kasKeluarSub += k.nominal;
-                });
-
-                let costSub = 0;
-                window.dbCostBulanan.forEach(c => {
-                    if (c.tahun === 2026 && c.bulan === monthStr) costSub += c.nominal;
-                });
-
-                let gajiSub = 0;
-                window.dbService.filter(s => s.status === 'Diambil').forEach(s => {
-                    const d = new Date(s.tanggal);
-                    if (d.getFullYear() === 2026 && d.getMonth() === m) {
-                        const profitUnit = s.biaya - (s.hppPart || 0);
-                        const tekObj = window.dbStaff.find(st => st.nama === s.teknisi);
-                        const pct = tekObj ? tekObj.komisi : 40;
-                        if (profitUnit > 0) gajiSub += (profitUnit * pct / 100);
-                    }
-                });
-
-                const netSub = grossSub - kasKeluarSub - costSub - gajiSub;
-                monthlyOmset[m] = omsetSub;
-                monthlyGrossProfit[m] = grossSub;
-                monthlyNetProfit[m] = netSub;
+                const f = computeFinance(String(m + 1).padStart(2, '0'), year);
+                monthlyOmset.push(f.omset);
+                monthlyGross.push(f.labaKotor);
+                monthlyNet.push(f.labaBersih);
             }
 
             if (financialChartInstance) financialChartInstance.destroy();
-
             const ctx = canvasEl.getContext('2d');
             financialChartInstance = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: monthsLabel,
                     datasets: [
-                        { label: 'Omset Pendapatan', data: monthlyOmset, backgroundColor: 'rgba(2, 132, 199, 0.8)', borderRadius: 4 },
-                        { label: 'Laba Kotor', data: monthlyGrossProfit, backgroundColor: 'rgba(16, 185, 129, 0.8)', borderRadius: 4 },
-                        { label: 'Laba Bersih', data: monthlyNetProfit, backgroundColor: 'rgba(147, 51, 234, 0.8)', borderRadius: 4 }
+                        { label: 'Omset Pendapatan', data: monthlyOmset, backgroundColor: 'rgba(2, 132, 199, 0.85)', borderRadius: 6 },
+                        { label: 'Laba Kotor', data: monthlyGross, backgroundColor: 'rgba(16, 185, 129, 0.85)', borderRadius: 6 },
+                        { label: 'Laba Bersih', data: monthlyNet, backgroundColor: 'rgba(147, 51, 234, 0.85)', borderRadius: 6 }
                     ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    animation: { duration: 900, easing: 'easeOutQuart' },
+                    interaction: { mode: 'index', intersect: false },
                     scales: {
-                        y: { beginAtZero: true, ticks: { callback: function(value) { return 'Rp ' + value.toLocaleString('id-ID'); } } }
+                        x: { grid: { display: false } },
+                        y: { beginAtZero: true, ticks: { callback: v => 'Rp ' + Number(v).toLocaleString('id-ID') } }
                     },
-                    plugins: { legend: { position: 'bottom' } }
+                    plugins: {
+                        legend: { position: 'bottom', labels: { usePointStyle: true } },
+                        tooltip: { callbacks: { label: c => `${c.dataset.label}: ${formatRp(c.parsed.y)}` } }
+                    }
                 }
             });
         }
@@ -1972,22 +2098,50 @@
         function handleStatusChange(nota, newStatus) {
             const s = window.dbService.find(x => x.nota === nota);
             if (!s) return;
+            if (s.status === newStatus) return;
+            const wasDiambil = s.status === 'Diambil';
+
+            // Membatalkan status Diambil: pelunasan yang tercatat di kas ikut dibatalkan agar tidak tercatat dua kali saat dilunasi ulang
+            if (wasDiambil) {
+                if (!confirm(`Nota ${nota} sudah Diambil & Lunas.\nMengubah status akan membatalkan pencatatan pelunasan di kas. Lanjutkan?`)) { renderServiceTable(); return; }
+                window.dbKas = window.dbKas.filter(k => !(kasKategori(k) === 'PELUNASAN' && (k.nota === nota || (!k.nota && (k.ket || '').includes(nota)))));
+                s.isLunas = false;
+                delete s.tanggalDiambil;
+                logAuditActivity('Pembatalan Pelunasan', `Pelunasan nota ${nota} dibatalkan karena status diubah menjadi ${newStatus}`);
+            }
 
             if (newStatus === 'Dibatalkan') {
+                if (!wasDiambil && !confirm(`Batalkan service ${nota} milik ${s.nama}?`)) { renderServiceTable(); return; }
+                if ((s.dp || 0) > 0 && confirm(`Kembalikan DP ${formatRp(s.dp)} kepada pelanggan?\n(OK = catat pengembalian DP sebagai kas keluar)`)) {
+                    window.dbKas.unshift({
+                        id: Date.now().toString(), tanggal: new Date().toISOString(),
+                        ket: `Pengembalian DP ${nota} (${s.nama})`, jenis: 'Keluar', kategori: 'REFUND', nota: nota, nominal: s.dp
+                    });
+                }
+                s.status = 'Dibatalkan';
+                s.isLunas = false;
                 logAuditActivity('Pembatalan Transaksi', `Service ${nota} milik ${s.nama} dibatalkan.`);
-            } else {
-                logAuditActivity('Perubahan Status', `Service ${nota} diubah statusnya menjadi ${newStatus}`);
+                saveAllToFirebase();
+                refreshAllUI();
+                return;
             }
 
             if (newStatus === 'Selesai') {
-                currentTargetNota = nota;
-                openPartModal(nota);
+                if (wasDiambil) {
+                    s.status = 'Selesai';
+                    saveAllToFirebase();
+                    refreshAllUI();
+                } else {
+                    currentTargetNota = nota;
+                    openPartModal(nota);
+                }
             } else if (newStatus === 'Diambil') {
                 currentTargetNota = nota;
                 openPaymentModal(nota);
             } else {
                 s.status = newStatus;
-                if (newStatus === 'Proses') s.isLunas = false;
+                s.isLunas = false;
+                logAuditActivity('Perubahan Status', `Service ${nota} diubah statusnya menjadi ${newStatus}`);
                 saveAllToFirebase();
                 refreshAllUI();
             }
@@ -2071,6 +2225,8 @@
                         tanggal: new Date().toISOString(),
                         ket: `Beli Sparepart Luar (${namaLuar}) untuk ${s.nota}`,
                         jenis: 'Keluar',
+                        kategori: 'HPP',
+                        nota: s.nota,
                         nominal: hppLuar
                     });
                 }
@@ -2108,18 +2264,22 @@
         function confirmPaymentAndFinish() {
             const s = window.dbService.find(x => x.nota === currentTargetNota);
             if (!s) return;
-            const sisa = s.biaya - s.dp;
+            const sisa = s.biaya - (s.dp || 0);
             const method = document.getElementById('pay-modal-method').value;
 
             s.status = 'Diambil';
             s.isLunas = true;
+            s.tanggalDiambil = new Date().toISOString();
 
             if (sisa > 0) {
                 window.dbKas.unshift({
                     id: Date.now().toString(),
-                    tanggal: new Date().toISOString(),
-                    ket: `Pelunasan Piutang Service ${s.nota} (${s.nama}) - ${method}`,
+                    tanggal: s.tanggalDiambil,
+                    ket: `Pelunasan Service ${s.nota} (${s.nama}) - ${method}`,
                     jenis: 'Masuk',
+                    kategori: 'PELUNASAN',
+                    nota: s.nota,
+                    metode: method,
                     nominal: sisa
                 });
             }
@@ -2144,20 +2304,17 @@
         }
 
         function calculateKasReconciliation() {
-            let totalKasMasuk = 0;
-            window.dbKas.filter(k => k.jenis === 'Masuk').forEach(k => totalKasMasuk += k.nominal);
-            window.dbService.filter(s => s.status === 'Diambil').forEach(s => {
-                totalKasMasuk += s.biaya;
-            });
-            window.dbService.filter(s => s.status === 'Proses' || s.status === 'Selesai').forEach(s => {
-                if (s.dp > 0) totalKasMasuk += s.dp;
+            // Saldo laci kasir = kas masuk TUNAI - seluruh kas keluar. Transfer/QRIS tidak masuk laci. Cost bulanan tidak otomatis keluar dari laci.
+            let saldoSistem = 0;
+            window.dbKas.forEach(k => {
+                if (k.jenis === 'Masuk') {
+                    const tunai = !k.metode || k.metode === 'CASH';
+                    if (tunai) saldoSistem += k.nominal;
+                } else {
+                    saldoSistem -= k.nominal;
+                }
             });
 
-            let totalKasKeluar = 0;
-            window.dbKas.filter(k => k.jenis === 'Keluar').forEach(k => totalKasKeluar += k.nominal);
-            window.dbCostBulanan.forEach(c => totalKasKeluar += c.nominal);
-
-            const saldoSistem = totalKasMasuk - totalKasKeluar;
             const physicalInput = parseInt(document.getElementById('recon-physical-input').value);
             const sysBalEl = document.getElementById('recon-system-balance');
             const diffEl = document.getElementById('recon-diff-display');
@@ -2194,7 +2351,7 @@
         function handleResetKasByPeriod() {
             const bulan = document.getElementById('reset-kas-bulan').value;
             const tahun = parseInt(document.getElementById('reset-kas-tahun').value) || 2026;
-            if (confirm(`Apakah Anda yakin ingin mereset data transaksi kas pada periode ${bulan}/${tahun}?`)) {
+            if (confirm(`Apakah Anda yakin ingin mereset data transaksi kas pada periode ${bulan}/${tahun}?\n\nPERHATIAN: seluruh catatan kas pada periode ini (termasuk DP & pelunasan otomatis) ikut terhapus dan akan memengaruhi laporan penerimaan.`)) {
                 window.dbKas = window.dbKas.filter(k => {
                     const d = new Date(k.tanggal);
                     return !(String(d.getMonth() + 1).padStart(2, '0') === bulan && d.getFullYear() === tahun);
@@ -2227,23 +2384,32 @@
         function resetCostForm() {
             document.getElementById('form-cost-bulanan').reset();
             document.getElementById('cost-id').value = '';
+            const now = new Date();
+            document.getElementById('cost-bulan').value = String(now.getMonth() + 1).padStart(2, '0');
+            document.getElementById('cost-tahun').value = now.getFullYear();
         }
 
         function renderCostBulananTable() {
             const tbody = document.getElementById('cost-table-body');
             if (!tbody) return;
+            const bln = document.getElementById('cost-filter-bulan').value;
+            const thn = parseInt(document.getElementById('cost-filter-tahun').value) || new Date().getFullYear();
+            const list = window.dbCostBulanan.filter(c => Number(c.tahun) === thn && (bln === 'ALL' || c.bulan === bln));
             tbody.innerHTML = '';
             let total = 0;
-            window.dbCostBulanan.forEach(c => {
-                total += c.nominal;
+            if (list.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-6 text-slate-400">Belum ada cost pada periode ini.</td></tr>';
+            }
+            list.forEach(c => {
+                total += c.nominal || 0;
                 const tr = document.createElement('tr');
                 tr.className = 'hover:bg-slate-50 border-b';
                 tr.innerHTML = `
-                    <td class="py-2.5 px-3 font-bold text-slate-800">${c.nama}</td>
-                    <td class="py-2.5 px-3 font-semibold text-sky-700">${c.kategori}</td>
+                    <td class="py-2.5 px-3 font-bold text-slate-800">${esc(c.nama)}</td>
+                    <td class="py-2.5 px-3 font-semibold text-sky-700">${esc(c.kategori)}</td>
                     <td class="py-2.5 px-3 text-slate-600 font-mono">${c.bulan}/${c.tahun}</td>
                     <td class="py-2.5 px-3 font-extrabold text-rose-700">${formatRp(c.nominal)}</td>
-                    <td class="py-2.5 px-3 text-slate-500">${c.ket || '-'}</td>
+                    <td class="py-2.5 px-3 text-slate-500">${esc(c.ket || '-')}</td>
                     <td class="py-2.5 px-3 text-center">
                         <button onclick="deleteCostBulanan('${c.id}')" class="text-rose-600 hover:underline text-xs">Hapus</button>
                     </td>
@@ -2307,149 +2473,81 @@
         }
 
         function renderLabaRugiReport() {
-            const bulan = document.getElementById('lr-bulan').value;
-            const tahun = parseInt(document.getElementById('lr-tahun').value) || 2026;
+            const bln = document.getElementById('lr-bulan').value;
+            const thn = parseInt(document.getElementById('lr-tahun').value) || new Date().getFullYear();
+            const f = computeFinance(bln, thn);
+            const setTxt = (id, v) => { const el = document.getElementById(id); if (el) el.innerText = v; };
 
-            let doneServices = window.dbService.filter(s => s.status === 'Diambil');
-            let allServices = window.dbService.filter(s => s.status !== 'Dibatalkan');
-            let kasMasuk = window.dbKas.filter(k => k.jenis === 'Masuk');
-            let kasKeluar = window.dbKas.filter(k => k.jenis === 'Keluar');
-            let costBulanan = window.dbCostBulanan;
+            setTxt('lr-periode-label', `Laporan Audit Keuangan Periode: ${periodLabel(bln, thn)}`);
+            setTxt('lr-print-store-name', window.storeSettings.namaToko);
 
-            if (bulan !== 'ALL') {
-                doneServices = doneServices.filter(s => {
-                    const d = new Date(s.tanggal);
-                    return String(d.getMonth() + 1).padStart(2, '0') === bulan && d.getFullYear() === tahun;
-                });
-                allServices = allServices.filter(s => {
-                    const d = new Date(s.tanggal);
-                    return String(d.getMonth() + 1).padStart(2, '0') === bulan && d.getFullYear() === tahun;
-                });
-                kasMasuk = kasMasuk.filter(k => {
-                    const d = new Date(k.tanggal);
-                    return String(d.getMonth() + 1).padStart(2, '0') === bulan && d.getFullYear() === tahun;
-                });
-                kasKeluar = kasKeluar.filter(k => {
-                    const d = new Date(k.tanggal);
-                    return String(d.getMonth() + 1).padStart(2, '0') === bulan && d.getFullYear() === tahun;
-                });
-                costBulanan = costBulanan.filter(c => c.bulan === bulan && c.tahun === tahun);
-            } else {
-                costBulanan = costBulanan.filter(c => c.tahun === tahun);
-            }
+            setTxt('audit-val-omset', formatRp(f.omset));
+            setTxt('audit-val-penerimaan', formatRp(f.penerimaan));
+            setTxt('audit-val-piutang', formatRp(f.piutang));
+            setTxt('audit-val-hpp', formatRp(f.hpp));
+            setTxt('audit-val-komisi', formatRp(f.komisi));
+            setTxt('audit-val-laba', formatRp(f.labaBersih));
 
-            let omset = 0, totalHpp = 0, totalGaji = 0, totalPenerimaan = 0, totalPiutang = 0;
-
-            doneServices.forEach(s => {
-                omset += s.biaya;
-                const hpp = (s.hppPart || 0);
-                totalHpp += hpp;
-                totalPenerimaan += s.biaya;
-                const profitUnit = s.biaya - hpp;
-                const tekObj = window.dbStaff.find(st => st.nama === s.teknisi);
-                const pct = tekObj ? tekObj.komisi : 40;
-                if (profitUnit > 0) totalGaji += (profitUnit * pct / 100);
-            });
-
-            allServices.forEach(s => {
-                const sisa = s.biaya - s.dp;
-                if (!s.isLunas && sisa > 0) totalPiutang += sisa;
-                if (s.dp > 0) totalPenerimaan += s.dp;
-            });
-
-            kasMasuk.forEach(k => totalPenerimaan += k.nominal);
-
-            let totalKeluarKas = 0;
-            kasKeluar.forEach(k => totalKeluarKas += k.nominal);
-            let totalCost = 0;
-            costBulanan.forEach(c => totalCost += c.nominal);
-
-            const totalPengeluaranOp = totalKeluarKas + totalCost;
-            const labaKotor = omset - totalHpp;
-            const labaBersih = labaKotor - totalPengeluaranOp - totalGaji;
-
-            document.getElementById('audit-val-omset').innerText = formatRp(omset);
-            document.getElementById('audit-val-penerimaan').innerText = formatRp(totalPenerimaan);
-            document.getElementById('audit-val-piutang').innerText = formatRp(totalPiutang);
-            document.getElementById('audit-val-hpp').innerText = formatRp(totalHpp);
-            document.getElementById('audit-val-komisi').innerText = formatRp(totalGaji);
-            document.getElementById('audit-val-laba').innerText = formatRp(labaBersih);
-
-            document.getElementById('lr-val-omset').innerText = formatRp(omset);
-            document.getElementById('lr-val-hpp').innerText = formatRp(totalHpp);
-            document.getElementById('lr-val-labakotor').innerText = formatRp(labaKotor);
-            document.getElementById('lr-val-keluar').innerText = formatRp(totalPengeluaranOp);
-            document.getElementById('lr-val-gaji').innerText = formatRp(totalGaji);
-            document.getElementById('lr-val-lababersih').innerText = formatRp(labaBersih);
+            setTxt('lr-val-omset', formatRp(f.omset));
+            setTxt('lr-val-hpp', formatRp(f.hpp));
+            setTxt('lr-val-labakotor', formatRp(f.labaKotor));
+            setTxt('lr-val-lain', formatRp(f.pendapatanLain));
+            setTxt('lr-val-keluar', formatRp(f.kasOperasional));
+            setTxt('lr-val-cost', formatRp(f.cost));
+            setTxt('lr-val-gaji', formatRp(f.komisi));
+            setTxt('lr-val-lababersih', formatRp(f.labaBersih));
         }
 
         function openAuditDetailModal(category) {
+            const bln = document.getElementById('lr-bulan').value;
+            const thn = parseInt(document.getElementById('lr-tahun').value) || new Date().getFullYear();
+            const f = computeFinance(bln, thn);
+            const per = periodLabel(bln, thn);
             const modalTitle = document.getElementById('audit-modal-title');
             const tbody = document.getElementById('audit-modal-tbody');
             tbody.innerHTML = '';
             let items = [];
 
-            if (category === 'OMSET') {
-                modalTitle.innerText = 'Penelusuran Sumber: Omset Pendapatan Lunas';
-                items = window.dbService.filter(s => s.status === 'Diambil').map(s => ({
-                    tanggal: formatTanggal(s.tanggal),
-                    ket: `Nota ${s.nota} - ${s.nama} (${s.tipe})`,
-                    nominal: s.biaya
-                }));
-            } else if (category === 'PENERIMAAN') {
-                modalTitle.innerText = 'Penelusuran Sumber: Penerimaan Uang Masuk';
-                window.dbService.forEach(s => {
-                    if (s.dp > 0) items.push({ tanggal: formatTanggal(s.tanggal), ket: `DP Nota ${s.nota} (${s.nama})`, nominal: s.dp });
-                    if (s.isLunas) items.push({ tanggal: formatTanggal(s.tanggal), ket: `Pelunasan Nota ${s.nota} (${s.nama})`, nominal: s.biaya - s.dp });
-                });
-                window.dbKas.filter(k => k.jenis === 'Masuk').forEach(k => {
-                    items.push({ tanggal: formatTanggal(k.tanggal), ket: `Kas Masuk: ${k.ket}`, nominal: k.nominal });
-                });
-            } else if (category === 'PIUTANG') {
-                modalTitle.innerText = 'Penelusuran Sumber: Piutang Aktif (Belum Lunas)';
-                window.dbService.forEach(s => {
-                    const sisa = s.biaya - s.dp;
-                    if (!s.isLunas && sisa > 0 && s.status !== 'Dibatalkan') {
-                        items.push({ tanggal: formatTanggal(s.tanggal), ket: `Piutang Nota ${s.nota} - ${s.nama} (${s.tipe})`, nominal: sisa });
-                    }
-                });
-            } else if (category === 'HPP') {
-                modalTitle.innerText = 'Penelusuran Sumber: Modal Sparepart (HPP)';
-                items = window.dbSparepartUsage.map(u => ({
-                    tanggal: formatTanggal(u.tanggal),
-                    ket: `Nota ${u.nota} - Part: ${u.namaPart} (${u.asal})`,
-                    nominal: u.hpp
-                }));
-            } else if (category === 'KOMISI') {
-                modalTitle.innerText = 'Penelusuran Sumber: Estimasi Komisi Teknisi';
-                window.dbService.filter(s => s.status === 'Diambil').forEach(s => {
-                    const profit = s.biaya - (s.hppPart || 0);
-                    const tekObj = window.dbStaff.find(st => st.nama === s.teknisi);
-                    const pct = tekObj ? tekObj.komisi : 40;
-                    if (profit > 0) {
-                        items.push({
-                            tanggal: formatTanggal(s.tanggal),
-                            ket: `Komisi ${s.teknisi} (${pct}%) dari Nota ${s.nota}`,
-                            nominal: profit * pct / 100
-                        });
-                    }
-                });
-            } else if (category === 'LABA') {
-                modalTitle.innerText = 'Penelusuran Sumber: Perhitungan Laba Bersih';
-                items = [{ tanggal: 'Akumulasi', ket: 'Total Pendapatan dikurangi HPP, Cost Bulanan, & Komisi Teknisi', nominal: document.getElementById('lr-val-lababersih').innerText }];
+            const sources = {
+                OMSET: ['Omset (Unit Diambil & Lunas)', f.omsetItems],
+                PENERIMAAN: ['Penerimaan Uang (Arus Kas Masuk: DP, Pelunasan, Lain-lain)', f.penerimaanItems],
+                PIUTANG: ['Piutang Aktif Saat Ini (Belum Lunas)', f.piutangItems],
+                HPP: ['Modal Sparepart (HPP)', f.hppItems],
+                KOMISI: ['Komisi Teknisi', f.komisiItems]
+            };
+
+            if (sources[category]) {
+                modalTitle.innerText = `Penelusuran: ${sources[category][0]} - ${category === 'PIUTANG' ? 'per hari ini' : per}`;
+                items = sources[category][1].slice();
+                const total = items.reduce((a, b) => a + b.nominal, 0);
+                items.push({ tanggal: '', ket: 'TOTAL', nominal: total, total: true });
+            } else {
+                modalTitle.innerText = `Penelusuran: Perhitungan Laba Bersih - ${per}`;
+                items = [
+                    { tanggal: '(+)', ket: 'Omset (unit diambil & lunas)', nominal: f.omset },
+                    { tanggal: '(-)', ket: 'Modal sparepart (HPP)', nominal: f.hpp },
+                    { tanggal: '(+)', ket: 'Pendapatan lain-lain (kas masuk manual)', nominal: f.pendapatanLain },
+                    { tanggal: '(-)', ket: 'Pengeluaran kas operasional', nominal: f.kasOperasional },
+                    { tanggal: '(-)', ket: 'Cost bulanan toko', nominal: f.cost },
+                    { tanggal: '(-)', ket: 'Komisi teknisi', nominal: f.komisi },
+                    { tanggal: '', ket: 'LABA BERSIH', nominal: f.labaBersih, total: true }
+                ];
             }
 
-            items.forEach(it => {
-                const tr = document.createElement('tr');
-                tr.className = 'border-b hover:bg-slate-50';
-                tr.innerHTML = `
-                    <td class="py-2.5 px-3 font-mono">${it.tanggal}</td>
-                    <td class="py-2.5 px-3 font-semibold text-slate-800">${it.ket}</td>
-                    <td class="py-2.5 px-3 text-right font-bold text-sky-700">${typeof it.nominal === 'number' ? formatRp(it.nominal) : it.nominal}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-
+            if (items.length === 1 && items[0].total) {
+                tbody.innerHTML = '<tr><td colspan="3" class="text-center py-6 text-slate-400">Tidak ada transaksi pada periode ini.</td></tr>';
+            } else {
+                items.forEach(it => {
+                    const tr = document.createElement('tr');
+                    tr.className = it.total ? 'bg-slate-100 font-extrabold' : 'border-b hover:bg-slate-50';
+                    tr.innerHTML = `
+                        <td class="py-2.5 px-3 font-mono">${esc(it.tanggal)}</td>
+                        <td class="py-2.5 px-3 font-semibold text-slate-800">${esc(it.ket)}</td>
+                        <td class="py-2.5 px-3 text-right font-bold text-sky-700">${formatRp(it.nominal)}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
             document.getElementById('modal-audit-detail').classList.remove('hidden');
         }
 
@@ -2486,20 +2584,29 @@
         }
 
         function exportAuditReportToCSV() {
-            let csvContent = "data:text/csv;charset=utf-8,Kategori Audit,Keterangan Sumber,Nominal\n";
-            window.dbService.filter(s => s.status === 'Diambil').forEach(s => {
-                csvContent += `Omset Lunas,"Nota ${s.nota} - ${s.nama}",${s.biaya}\n`;
-            });
-            window.dbSparepartUsage.forEach(u => {
-                csvContent += `HPP Sparepart,"Nota ${u.nota} - ${u.namaPart}",${u.hpp}\n`;
-            });
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `Laporan_Audit_Keuangan_${new Date().toISOString().slice(0,10)}.csv`);
+            const bln = document.getElementById('lr-bulan').value;
+            const thn = parseInt(document.getElementById('lr-tahun').value) || new Date().getFullYear();
+            const f = computeFinance(bln, thn);
+            const rows = [['Kategori Audit', 'Tanggal', 'Keterangan Sumber', 'Nominal']];
+            const add = (kat, list) => list.forEach(i => rows.push([kat, i.tanggal, i.ket, i.nominal]));
+            add('Omset', f.omsetItems);
+            add('Penerimaan Uang', f.penerimaanItems);
+            add('Piutang Aktif', f.piutangItems);
+            add('HPP Sparepart', f.hppItems);
+            add('Komisi Teknisi', f.komisiItems);
+            add('Pengeluaran Kas Operasional', f.opItems);
+            add('Cost Bulanan', f.costItems);
+            rows.push(['RINGKASAN', periodLabel(bln, thn), 'Laba Kotor', f.labaKotor]);
+            rows.push(['RINGKASAN', periodLabel(bln, thn), 'Laba Bersih', f.labaBersih]);
+            const csv = '\ufeff' + rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `Laporan_Audit_Keuangan_${periodLabel(bln, thn).replace(/\s/g, '_')}.csv`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+            setTimeout(() => URL.revokeObjectURL(link.href), 1000);
         }
 
         function openPrintOptionsModal(serviceObj) {
@@ -2787,7 +2894,7 @@
             const ket = document.getElementById('kas-ket').value;
             const nominal = parseInt(document.getElementById('kas-nominal').value) || 0;
 
-            window.dbKas.unshift({ id: Date.now().toString(), tanggal: new Date().toISOString(), ket, jenis, nominal });
+            window.dbKas.unshift({ id: Date.now().toString(), tanggal: new Date().toISOString(), ket, jenis, kategori: jenis === 'Masuk' ? 'LAIN' : 'OPERASIONAL', metode: 'CASH', nominal });
             logAuditActivity('Kas Manual', `Kas ${jenis}: ${ket} (${formatRp(nominal)})`);
             saveAllToFirebase();
             document.getElementById('form-kas').reset();
@@ -2807,16 +2914,31 @@
         function renderKasTable() {
             const tbody = document.getElementById('kas-table-body');
             if (!tbody) return;
+
+            const now = new Date();
+            const f = computeFinance(String(now.getMonth() + 1).padStart(2, '0'), now.getFullYear());
+            const setTxt = (id, v) => { const el = document.getElementById(id); if (el) el.innerText = v; };
+            setTxt('kas-sum-masuk', formatRp(f.penerimaan));
+            setTxt('kas-sum-keluar', formatRp(f.kasKeluarTotal));
+            setTxt('kas-sum-kotor', formatRp(f.labaKotor));
+            setTxt('kas-sum-bersih', formatRp(f.labaBersih));
+
             tbody.innerHTML = '';
+            if (window.dbKas.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-6 text-slate-400">Belum ada transaksi kas.</td></tr>';
+                return;
+            }
+            const autoCats = ['DP', 'PELUNASAN', 'HPP', 'REFUND'];
             window.dbKas.forEach(k => {
+                const kat = kasKategori(k);
                 const tr = document.createElement('tr');
                 tr.className = 'hover:bg-slate-50 border-b';
                 tr.innerHTML = `
                     <td class="py-2.5 px-3 text-slate-500 text-[11px]">${formatTanggal(k.tanggal)}</td>
-                    <td class="py-2.5 px-3 font-semibold text-slate-800">${k.ket}</td>
-                    <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${k.jenis === 'Masuk' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">${k.jenis}</span></td>
+                    <td class="py-2.5 px-3 font-semibold text-slate-800">${esc(k.ket)}</td>
+                    <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${k.jenis === 'Masuk' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">${k.jenis}</span> <span class="text-[10px] text-slate-400">${kat}</span></td>
                     <td class="py-2.5 px-3 text-right font-bold ${k.jenis === 'Masuk' ? 'text-emerald-700' : 'text-rose-700'}">${formatRp(k.nominal)}</td>
-                    <td class="py-2.5 px-3 text-center"><button onclick="deleteKasItem('${k.id}')" class="text-rose-600 hover:underline text-xs">Hapus</button></td>
+                    <td class="py-2.5 px-3 text-center">${autoCats.includes(kat) ? '<span class="text-[10px] text-slate-400">Otomatis</span>' : `<button onclick="deleteKasItem('${k.id}')" class="text-rose-600 hover:underline text-xs">Hapus</button>`}</td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -2928,42 +3050,79 @@
         function renderClientDropdownForInvoice() {
             const sel = document.getElementById('inv-client-select');
             if (!sel) return;
+            const prev = sel.value;
+            // Hanya pelanggan yang punya unit berstatus Selesai (belum diambil)
+            const names = [...new Set(window.dbService.filter(s => s.status === 'Selesai').map(s => s.nama))].sort();
             sel.innerHTML = '<option value="">-- Pilih Pelanggan --</option>';
-            [...new Set(window.dbService.map(s => s.nama))].forEach(n => {
+            names.forEach(n => {
                 const opt = document.createElement('option');
                 opt.value = n;
                 opt.innerText = n;
                 sel.appendChild(opt);
             });
+            if (prev && names.includes(prev)) sel.value = prev;
+            generateMonthlyInvoice(true);
         }
 
-        function generateMonthlyInvoice() {
-            const clientName = document.getElementById('inv-client-select').value;
+        function generateMonthlyInvoice(silent) {
+            silent = silent === true;
+            const sel = document.getElementById('inv-client-select');
+            const clientName = sel.value;
             const bln = document.getElementById('inv-bulan').value;
-            const thn = parseInt(document.getElementById('inv-tahun').value) || 2026;
-            if (!clientName) { alert('Pilih pelanggan!'); return; }
-            const clientServices = window.dbService.filter(s => {
-                const d = new Date(s.tanggal);
-                return s.nama === clientName && String(d.getMonth() + 1).padStart(2, '0') === bln && d.getFullYear() === thn;
-            });
-            document.getElementById('inv-client-name').innerText = clientName;
+            const thn = parseInt(document.getElementById('inv-tahun').value) || new Date().getFullYear();
             const tbody = document.getElementById('inv-items-tbody');
+            const setTxt = (id, v) => { const el = document.getElementById(id); if (el) el.innerText = v; };
+            const cfg = window.storeSettings;
+
+            setTxt('inv-store-title', cfg.namaToko);
+            setTxt('inv-store-address', cfg.alamat);
+            setTxt('inv-store-wa', cfg.wa);
+            setTxt('inv-sign-store', cfg.namaToko);
+            setTxt('inv-date-display', `Periode: ${periodLabel(bln, thn)}`);
+
+            if (!clientName) {
+                if (!silent) alert('Pilih pelanggan!');
+                setTxt('inv-client-name', '-'); setTxt('inv-client-wa', '-'); setTxt('inv-client-address', '-');
+                setTxt('inv-sign-client', 'Pihak Pelanggan');
+                setTxt('inv-number-display', `INV/${thn}/${bln}/000`);
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center py-6 text-slate-400 border">Silakan pilih pelanggan dan klik "Tampilkan Tagihan".</td></tr>';
+                setTxt('inv-total-display', 'Rp 0');
+                return;
+            }
+
+            // HANYA status Selesai. Unit yang sudah Diambil tidak ditagihkan lagi.
+            const clientServices = window.dbService.filter(s => s.status === 'Selesai' && s.nama === clientName && inPeriod(s.tanggal, bln, thn));
+            const anyRec = window.dbService.find(s => s.nama === clientName);
+            const idx = [...sel.options].findIndex(o => o.value === clientName);
+
+            setTxt('inv-client-name', clientName);
+            setTxt('inv-client-wa', anyRec ? anyRec.wa : '-');
+            setTxt('inv-client-address', anyRec && anyRec.alamat ? anyRec.alamat : '-');
+            setTxt('inv-sign-client', clientName);
+            setTxt('inv-number-display', `INV/${thn}/${bln}/${String(Math.max(idx, 0)).padStart(3, '0')}`);
+
             tbody.innerHTML = '';
             let grandTotal = 0;
+            if (clientServices.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center py-6 text-slate-400 border">Tidak ada unit berstatus Selesai pada periode ini.</td></tr>';
+            }
             clientServices.forEach(s => {
-                grandTotal += s.biaya;
+                const sisa = s.biaya - (s.dp || 0);
+                grandTotal += sisa;
                 const tr = document.createElement('tr');
                 tr.className = 'border-b';
                 tr.innerHTML = `
-                    <td class="py-2.5 px-3 border font-mono font-bold">${s.nota}</td>
+                    <td class="py-2.5 px-3 border font-mono font-bold">${esc(s.nota)}</td>
                     <td class="py-2.5 px-3 border">${formatTanggal(s.tanggal)}</td>
-                    <td class="py-2.5 px-3 border">${s.tipe} - ${s.kerusakan}</td>
-                    <td class="py-2.5 px-3 border">${s.teknisi}</td>
-                    <td class="py-2.5 px-3 border text-right font-bold">${formatRp(s.biaya)}</td>
+                    <td class="py-2.5 px-3 border">${esc(s.tipe)} - ${esc(s.kerusakan)}</td>
+                    <td class="py-2.5 px-3 border">${esc(s.teknisi)}</td>
+                    <td class="py-2.5 px-3 border text-right">${formatRp(s.biaya)}</td>
+                    <td class="py-2.5 px-3 border text-right text-emerald-700">${formatRp(s.dp || 0)}</td>
+                    <td class="py-2.5 px-3 border text-right font-bold">${formatRp(sisa)}</td>
                 `;
                 tbody.appendChild(tr);
             });
-            document.getElementById('inv-total-display').innerText = formatRp(grandTotal);
+            setTxt('inv-total-display', formatRp(grandTotal));
         }
 
         function openPrintModalForInvoice() {
@@ -3107,13 +3266,30 @@
             const s = window.dbService.find(x => x.nota === nota);
             if (!s) return;
 
+            const newBiaya = parseInt(document.getElementById('edit-biaya').value) || 0;
+            const newDp = parseInt(document.getElementById('edit-dp').value) || 0;
+            if (s.status === 'Diambil' && (newBiaya !== s.biaya || newDp !== (s.dp || 0))) {
+                alert('Unit sudah Diambil & Lunas. Harga dan DP tidak bisa diubah. Ubah status ke Selesai terlebih dahulu bila perlu koreksi.');
+                return;
+            }
+
+            const oldDp = s.dp || 0;
             s.nama = document.getElementById('edit-nama').value;
             s.wa = document.getElementById('edit-wa').value;
             s.tipe = document.getElementById('edit-tipe').value;
             s.kerusakan = document.getElementById('edit-kerusakan').value;
-            s.biaya = parseInt(document.getElementById('edit-biaya').value) || 0;
-            s.dp = parseInt(document.getElementById('edit-dp').value) || 0;
+            s.biaya = newBiaya;
+            s.dp = newDp;
+            s.sisa = newBiaya - newDp;
             s.teknisi = document.getElementById('edit-teknisi').value;
+
+            // Selisih DP dicatat ke kas agar saldo & laporan penerimaan tetap sinkron
+            const diff = newDp - oldDp;
+            if (diff > 0) {
+                window.dbKas.unshift({ id: Date.now().toString(), tanggal: new Date().toISOString(), ket: `Tambahan DP Service ${nota} (${s.nama})`, jenis: 'Masuk', kategori: 'DP', nota: nota, metode: 'CASH', nominal: diff });
+            } else if (diff < 0) {
+                window.dbKas.unshift({ id: Date.now().toString(), tanggal: new Date().toISOString(), ket: `Koreksi/Pengembalian DP ${nota} (${s.nama})`, jenis: 'Keluar', kategori: 'REFUND', nota: nota, nominal: Math.abs(diff) });
+            }
 
             logAuditActivity('Edit Data', `Memperbarui data service nota ${nota} (${s.nama})`);
             saveAllToFirebase();
